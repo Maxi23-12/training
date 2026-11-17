@@ -11,10 +11,11 @@
   <link rel="stylesheet" href="./styles.css?v=0.4.0">
   <link rel="stylesheet" href="./training.css?v=0.4.0">
   <link rel="stylesheet" href="./auto-sync.css?v=0.4.0">
+  <link rel="stylesheet" href="./overview.css?v=0.5.0">
   <script defer src="./training.js?v=0.4.0"></script>
   <script defer src="./intervals-sync.js?v=0.4.0"></script>
   <script defer src="./auto-sync.js?v=0.4.2"></script>
-  <script defer src="./app.js?v=0.4.4"></script>
+  <script defer src="./app.js?v=0.5.0"></script>
 </head>
 <body>
 <div class="shell">
@@ -49,40 +50,89 @@
     </header>
     <main class="content">
       <section class="page active" id="page-overview">
-        <div class="hero">
-          <div><div class="eyebrow">PERSONAL PERFORMANCE</div><h1>Dein Training.<br><em>Deine Entwicklung.</em></h1><p>Radfahren, Laufen und Regeneration – über Jahre hinweg, an einem Ort.</p></div>
-          <span class="hero-stamp">EST. 2013 <span>◆</span> GAM ON!</span>
+        <div class="overview-intro">
+          <div>
+            <div class="eyebrow">PERSONAL PERFORMANCE / DEIN COCKPIT</div>
+            <h1>Dein Training. <em>Dein nächster Schritt.</em></h1>
+            <p>Die wichtigsten Signale aus Training und Erholung – auf einen Blick, ohne Zahlenfriedhof.</p>
+          </div>
+          <div class="overview-datastamp" aria-live="polite">
+            <span class="overview-status-dot" aria-hidden="true"></span>
+            <div><strong>Datenstand</strong><span id="overviewAsOf">Noch keine Aktivitäten</span></div>
+          </div>
         </div>
         <div class="empty-notice" id="firstStart">
           <div class="empty-icon">↗</div>
-          <div><strong>Willkommen in deinem Trainingscockpit!</strong><p>Importiere zunächst deine Intervals.icu-, Strava-, RENPHO- und Wellness-CSV-Dateien. Alles wird direkt auf deinem Gerät verarbeitet – niemals zu GitHub hochgeladen.</p></div>
-          <button class="button primary" data-go="data">Daten importieren</button>
+          <div><strong>Willkommen in deinem Trainingscockpit!</strong><p>Verbinde Intervals.icu oder importiere bestehende CSV-Dateien. Deine Daten bleiben im Browser auf deinem Gerät.</p></div>
+          <button class="button primary" data-go="data">Daten einrichten</button>
         </div>
-        <div class="kpi-grid">
-          <article class="panel kpi"><span class="kpi-label">Radkilometer dieses Jahr <span>↗</span></span><div id="kpiKm" class="kpi-value">–</div><div id="kpiKmNote" class="kpi-note">CSV-Dateien importieren</div></article>
-          <article class="panel kpi"><span class="kpi-label">Radstunden dieses Jahr</span><div id="kpiHours" class="kpi-value">–</div><div class="kpi-note">Aufzeichnungszeiten bereinigt</div></article>
-          <article class="panel kpi"><span class="kpi-label">Trainingsbelastung · 7 Tage</span><div id="kpiLoad" class="kpi-value">–</div><div class="kpi-note">Vorhandene Intervals.icu-Last</div></article>
-          <article class="panel kpi"><span class="kpi-label">Letztes Gewicht</span><div id="kpiWeight" class="kpi-value">–</div><div id="kpiWeightNote" class="kpi-note">Echte RENPHO-Werte</div></article>
-        </div>
-        <div class="two-col">
-          <article class="panel">
-            <div class="panel-heading"><div><h2>Deine Jahreskilometer</h2><p>Historischer Verlauf · Radfahren</p></div><span class="chip">RAD</span></div>
-            <div id="overviewYears" class="chart" aria-label="Radkilometer im Jahresvergleich"></div>
+
+        <div class="overview-feature-grid">
+          <article class="panel overview-coach-feature">
+            <div class="overview-panel-kicker"><span class="overview-kicker-mark">✦</span> DEIN COACH FÜR HEUTE</div>
+            <h2 id="overviewCoachHeadline">Wir schauen auf deinen Trainingsverlauf.</h2>
+            <p class="overview-coach-reason" id="overviewCoachWhy">Eine Empfehlung erscheint, sobald aktuelle Trainingsdaten vorhanden sind.</p>
+            <div class="overview-fact-row">
+              <div><span>Radzeit · 7 Tage</span><strong id="overviewCoachHours">–</strong></div>
+              <div><span>Vergleich · 28 Tage</span><strong id="overviewCoachAverage">–</strong></div>
+            </div>
+            <div class="overview-coach-actions">
+              <button class="button primary" data-go="training">Training planen <span aria-hidden="true">↗</span></button>
+              <button class="button secondary" data-go="wellness">Erholung ansehen</button>
+            </div>
+            <p class="overview-disclaimer">Orientierung aus deinen Daten – Tagesform und eigenes Empfinden gehen vor.</p>
           </article>
-          <article class="panel">
-            <div class="panel-heading"><div><h2>Trainingspuls</h2><p>Deine vergangenen 12 Wochen</p></div><span class="chip soft">LOAD</span></div>
-            <div id="overviewWeeks" class="chart"></div>
-            <p class="chart-foot">Belastung wird nur dort summiert, wo sie in Intervals.icu tatsächlich vorliegt.</p>
+
+          <article class="panel overview-health-feature">
+            <div class="panel-heading">
+              <div><h2>Erholung &amp; Gesundheit</h2><p>Letzte verfügbare Messungen</p></div>
+              <span class="overview-health-symbol" aria-hidden="true">♡</span>
+            </div>
+            <div class="overview-health-grid">
+              <div class="overview-health-stat"><span>Schlafdauer</span><strong id="overviewSleep">–</strong><small id="overviewSleepDate">Keine Daten</small></div>
+              <div class="overview-health-stat"><span>Ruhepuls</span><strong id="overviewResting">–</strong><small id="overviewRestingDate">Keine Daten</small></div>
+              <div class="overview-health-stat"><span>HRV</span><strong id="overviewHrv">–</strong><small id="overviewHrvDate">Keine Daten</small></div>
+              <div class="overview-health-stat"><span>Gewicht</span><strong id="kpiWeight">–</strong><small id="kpiWeightNote">Keine Messung</small></div>
+            </div>
+            <button class="overview-inline-link" data-go="wellness">Alle Wellness-Verläufe ansehen <span aria-hidden="true">→</span></button>
           </article>
         </div>
-        <div class="two-col">
+
+        <div class="overview-section-heading">
+          <div><h2>Dein Training in Zahlen</h2><p>Aktuell, nachvollziehbar, mit dem Blick auf deine Entwicklung.</p></div>
+        </div>
+        <div class="kpi-grid overview-kpi-grid">
+          <article class="panel kpi"><span class="kpi-label">Radstunden · 7 Tage <span>◷</span></span><div id="kpiHours" class="kpi-value">–</div><div id="kpiHoursNote" class="kpi-note">Ø der letzten 28 Tage</div></article>
+          <article class="panel kpi"><span class="kpi-label">Trainingslast · 7 Tage <span>↗</span></span><div id="kpiLoad" class="kpi-value">–</div><div id="kpiLoadNote" class="kpi-note">Aus Intervals.icu</div></article>
+          <article class="panel kpi"><span class="kpi-label">Radkilometer · Kalenderjahr <span>◎</span></span><div id="kpiKm" class="kpi-value">–</div><div id="kpiKmNote" class="kpi-note">Bisher erfasst</div></article>
+          <article class="panel kpi"><span class="kpi-label">Trainingstage · 7 Tage <span>◇</span></span><div id="kpiDays" class="kpi-value">–</div><div id="kpiDaysNote" class="kpi-note">Alle Sportarten</div></article>
+        </div>
+
+        <div class="overview-section-heading">
+          <div><h2>Deine Trainingsentwicklung</h2><p>8 Wochen im Vergleich: Belastung und Umfang</p></div>
+          <button class="overview-inline-link" data-go="history">Zur Trainingshistorie <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="two-col overview-chart-grid">
+          <article class="panel overview-chart-panel">
+            <div class="panel-heading"><div><h2>Trainingsbelastung</h2><p>Wöchentliche Intervals.icu-Last</p></div><span class="chip soft">LOAD</span></div>
+            <div id="overviewWeeks" class="chart" aria-label="Trainingsbelastung der letzten acht Kalenderwochen"></div>
+            <p class="chart-foot">Fehlende Belastungswerte werden nicht geschätzt.</p>
+          </article>
+          <article class="panel overview-chart-panel">
+            <div class="panel-heading"><div><h2>Radstunden</h2><p>Wöchentlicher Trainingsumfang</p></div><span class="chip">RAD</span></div>
+            <div id="overviewHours" class="chart" aria-label="Radstunden der letzten acht Kalenderwochen"></div>
+            <p class="chart-foot">Aufgezeichnete Radzeit pro Kalenderwoche.</p>
+          </article>
+        </div>
+        <div class="two-col overview-bottom-grid">
           <article class="panel">
-            <div class="panel-heading"><div><h2>Zuletzt aufgezeichnet</h2><p>Deine neuesten Einheiten</p></div><button class="text-button" data-go="activities">Alle ansehen →</button></div>
+            <div class="panel-heading"><div><h2>Zuletzt aufgezeichnet</h2><p>Deine neuesten Aktivitäten</p></div><button class="text-button" data-go="activities">Alle ansehen →</button></div>
             <div id="recentActivities" class="activity-list"></div>
           </article>
-          <article class="panel coach-panel">
-            <div class="panel-heading"><div><h2>Coach Desk</h2><p>Einordnung statt Zahlenfriedhof</p></div><span class="coach-emoji">🚴</span></div>
+          <article class="panel overview-context-panel">
+            <div class="panel-heading"><div><h2>Dein Trainingskompass</h2><p>Kurze Einordnung des Verlaufs</p></div><span class="overview-compass-symbol" aria-hidden="true">↗</span></div>
             <div id="coachNotes" class="coach-notes"></div>
+            <div class="overview-goal-line"><span>DEIN LANGFRISTIGER FOKUS</span><strong>RACA 2027 · Ausdauer &amp; Konstanz</strong></div>
           </article>
         </div>
       </section>
