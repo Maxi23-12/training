@@ -51,3 +51,8 @@
 .training-empty{color:#96afc3;font-size:12px;border:1px dashed #385367;border-radius:11px;padding:14px}
 @media(max-width:1170px){.training-columns{grid-template-columns:1fr}}
 @media(max-width:650px){.training-workouts{grid-template-columns:1fr 1fr}.training-actions .button{flex:1}.training-recent .recent-row{grid-template-columns:61px minmax(0,1fr) 50px}.training-workout{padding:10px}.training-workout-detail .workout-block{align-items:start;flex-direction:column;gap:3px}}
+
+.icu-upload-preview{white-space:pre-wrap;word-break:break-word;max-height:280px;overflow:auto;background:#0b1a29;color:#c6e2ee;border:1px solid #355b67;border-radius:12px;padding:13px;font:12px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;margin:12px 0}
+#icuUploadMessage{min-height:22px}
+#icuUploadMessage.error{color:#f6a9b5}
+#icuUploadMessage.success{color:#85e6cc}
