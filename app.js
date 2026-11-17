@@ -306,8 +306,22 @@
     return [...map.values()];
   }
   function drawWellness(){
-    const weigh=(db.renpho||[]),w=latest(weigh,'weight'),well=wellnessMerged(),sleep=latest(well,'sleep'),hrv=latest(well,'hrv'),rest=latest(well,'restingHR');
-    $('wellWeight').textContent=w?fmt(w.weight,2)+' kg':'–';$('wellWeightInfo').textContent=w?w.date:'RENPHO importieren';
+    const well=wellnessMerged(),sleep=latest(well,'sleep'),hrv=latest(well,'hrv'),rest=latest(well,'restingHR');
+    // Combine actual Intervals.icu weigh-ins with existing RENPHO CSV history.
+    // CSV is authoritative when both sources record the same calendar day.
+    const weightsByDate=new Map();
+    for(const row of well){
+      if(row?.date&&row.weight>=30&&row.weight<=250)
+        weightsByDate.set(row.date,{date:row.date,weight:row.weight,source:'Intervals.icu'});
+    }
+    for(const row of (db.renpho||[])){
+      if(row?.date&&row.weight>=30&&row.weight<=250)
+        weightsByDate.set(row.date,{date:row.date,weight:row.weight,source:'RENPHO'});
+    }
+    const weigh=[...weightsByDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+    const w=weigh.at(-1);
+    $('wellWeight').textContent=w?fmt(w.weight,2)+' kg':'–';
+    $('wellWeightInfo').textContent=w?w.date+' · '+w.source:'Noch keine Gewichtsmessung';
     $('wellSleep').textContent=sleep?fmt(sleep.sleep,1)+' h':'–';
     $('wellHRV').textContent=hrv?fmt(hrv.hrv,1)+' ms':'–';
     $('wellRest').textContent=rest?fmt(rest.restingHR,0)+' bpm':'–';
