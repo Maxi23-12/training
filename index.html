@@ -8,10 +8,10 @@
   <title>TRAINING · Performance Cockpit</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=0.4.0">
   <link rel="stylesheet" href="./training.css?v=0.4.0">
   <link rel="stylesheet" href="./auto-sync.css?v=0.4.0">
-  <script defer src="./training.js?v=0.3.1"></script>
+  <script defer src="./training.js?v=0.4.0"></script>
   <script defer src="./intervals-sync.js?v=0.4.0"></script>
   <script defer src="./auto-sync.js?v=0.4.0"></script>
   <script defer src="./app.js?v=0.4.0"></script>
@@ -235,7 +235,7 @@
         <div class="eyebrow">YOUR DATA, YOUR RULES</div>
         <h1 class="section-title">Daten <em>& Einstellungen.</em></h1>
         <p class="section-lead">Hier kommt deine Trainingsgeschichte ins Cockpit. Alles läuft lokal im Browser.</p>
-        <div class="privacy-banner"><strong>🔒 Privat bleibt privat.</strong><span>Alle CSV-Dateien werden ausschließlich auf deinem Gerät gelesen. Die Web-App sendet keine Trainings- oder Gesundheitsdaten an GitHub oder einen anderen Server. Auf jedem Gerät importierst du die Daten separat.</span></div>
+        <div class="privacy-banner"><strong>🔒 Privat bleibt privat.</strong><span>CSV-Exporte werden lokal auf deinem Gerät verarbeitet. Bei aktivierter Synchronisierung fragt die Web-App Intervals.icu direkt über dessen API ab; dabei werden Zugangsdaten an Intervals.icu übertragen. Es werden keine persönlichen CSV- oder Wellnessdaten auf GitHub hochgeladen. Jedes Gerät besitzt einen eigenen Datenstand.</span></div>
         <div class="panel" id="automaticSyncPanel">
           <div class="panel-heading"><div><h2>Automatische Aktualisierung · Intervals.icu</h2><p>Neue Einheiten und Erholungswerte übernehmen, ohne jedes Mal CSV-Dateien zu exportieren</p></div><span class="chip">SYNC</span></div>
           <div class="sync-head">
