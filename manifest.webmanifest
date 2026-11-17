@@ -1,0 +1,18 @@
+{
+  "name": "TRAINING · Performance Cockpit",
+  "short_name": "TRAINING",
+  "description": "Privates Trainingscockpit für Radfahren, Laufen und Erholung.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08111e",
+  "theme_color": "#0b1422",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
