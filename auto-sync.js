@@ -24,8 +24,22 @@
   }
   function enabled(){return getStore(STORE,localStorage)!=='off'}
   function numeric(v){if(v==null||v==='')return null;let x=Number(v);return Number.isFinite(x)?x:null}
+  function apiStravaStub(o){
+    if(!o||typeof o!=='object')return false;
+    const note=String(o._note||o.note||'').toLowerCase();
+    const name=String(o.name||'').trim().toLowerCase();
+    const source=String(o.source||'').trim().toUpperCase();
+    return (note.includes('strava')&&(note.includes('api')||note.includes('not available')||note.includes('hidden'))) ||
+      name==='hidden strava activity'||name==='versteckte strava-aktivität'||
+      (source==='STRAVA'&&!o.type&&!o.icu_training_load&&!o.average_heartrate);
+  }
+  function legacyStravaStub(o){
+    if(!o||typeof o!=='object')return false;
+    const generic=['aktivität','activity','hidden strava activity','versteckte strava-aktivität'].includes(String(o.name||'').trim().toLowerCase());
+    return generic&&o.sport==='other'&&o.load==null&&o.watts==null&&o.np==null&&o.hr==null;
+  }
   function activity(o){
-    if(!o||typeof o!=='object'||!o.id)return null;
+    if(!o||typeof o!=='object'||!o.id||apiStravaStub(o))return null;
     const d=o.start_date||o.start_date_local||o.startDate;
     if(typeof d!=='string'||!Number.isFinite(Date.parse(d)))return null;
     const type=String(o.type||''),sport=/ride|cycling|bike/i.test(type)?'bike':/run/i.test(type)?'run':'other';
@@ -91,24 +105,30 @@
       const [ar,wr]=await Promise.allSettled([
         getJson(api+'/activities'+qs,key),getJson(api+'/wellness'+qs,key)
       ]);
+      const stubs=ar.status==='fulfilled'&&Array.isArray(ar.value)?ar.value.filter(apiStravaStub).length:0;
       const nextA=ar.status==='fulfilled'&&Array.isArray(ar.value)?ar.value.map(activity).filter(Boolean):null;
       const nextW=wr.status==='fulfilled'&&Array.isArray(wr.value)?wr.value.map(wellness).filter(Boolean):null;
       if(nextA===null&&nextW===null)throw Error('Aktivitäten: '+(ar.reason?.message||'Ungültige Antwort')+
         '; Wellness: '+(wr.reason?.message||'Ungültige Antwort'));
-      const previousA=(db.liveIntervals||[]).length,previousW=(db.liveWellness||[]).length;
-      // Keep source arrays and all historical CSV values untouched.
-      if(nextA!==null)db.liveIntervals=mergeActivity(db.liveIntervals||[],nextA);
+      // Remove legacy anonymous stubs from the API cache only; original CSV data remain untouched.
+      const cleanCache=(db.liveIntervals||[]).filter(x=>!legacyStravaStub(x));
+      const removedOld=(db.liveIntervals||[]).length-cleanCache.length;
+      const previousA=cleanCache.length,previousW=(db.liveWellness||[]).length;
+      if(nextA!==null)db.liveIntervals=mergeActivity(cleanCache,nextA);
+      else if(removedOld)db.liveIntervals=cleanCache;
       if(nextW!==null)db.liveWellness=mergeWellness(db.liveWellness||[],nextW);
       const addA=(db.liveIntervals||[]).length-previousA,addW=(db.liveWellness||[]).length-previousW;
       db.autoSync={lastSuccess:new Date().toISOString(),oldest,newest,
         activityCount:nextA?.length??null,wellnessCount:nextW?.length??null,
-        partial:nextA===null||nextW===null};
+        partial:nextA===null||nextW===null,protectedStravaCount:stubs,removedLegacyStubs:removedOld};
       const persisted=context.safeStore();
       context.rebuild();context.render();
       lastGood=Date.now();
       const summary='Letzte Prüfung: '+new Date().toLocaleString('de-DE')+' · '+
         (nextA===null?'Aktivitäten nicht abrufbar':addA+' neue API-Aktivitäten')+' · '+
-        (nextW===null?'Wellness nicht abrufbar':addW+' neue Wellness-Tage')+'.';
+        (nextW===null?'Wellness nicht abrufbar':addW+' neue Wellness-Tage')+
+        (stubs?' · '+stubs+' Strava-geschützte Platzhalter ausgelassen':'')+
+        (removedOld?' · '+removedOld+' frühere Platzhalter aus dem API-Cache entfernt':'')+'.';
       status(summary+(persisted?'':' Speichern fehlgeschlagen – bitte Backup sichern.'),db.autoSync.partial?'warn':'ok');
     }catch(e){
       status('Aktualisierung nicht möglich: '+String(e?.message||e)+'. Die bestehenden Daten bleiben unverändert.','warn');
