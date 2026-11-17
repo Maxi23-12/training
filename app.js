@@ -1,7 +1,7 @@
 'use strict';
 (() => {
   const KEY='training-performance-lab-v1';
-  const empty=()=>({version:1,settings:{ftp:280,hrMax:194},intervals:[],strava:[],renpho:[],wellness:[],updated:{}});
+  const empty=()=>({version:1,settings:{ftp:280,hrMax:194},intervals:[],strava:[],renpho:[],wellness:[],liveIntervals:[],liveWellness:[],autoSync:null,updated:{}});
   let db=empty(), activities=[], page='overview',activityShown=40;
   const $=id=>document.getElementById(id);
   const fmt=(v,d=0)=>Number.isFinite(v)?v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d}):'–';
@@ -76,7 +76,14 @@
     rebuild();render();
   }
   function rebuild(){
-    activities=(db.intervals||[]).map(x=>({...x}));
+    const unique=new Map();
+    for(const a of [...(db.intervals||[]),...(db.liveIntervals||[])]) {
+      if(!a?.id)continue;
+      const id=String(a.id),old=unique.get(id);
+      unique.set(id,old?{...old,...Object.fromEntries(Object.entries(a).filter(([k,v])=>
+        v!==null&&v!==undefined&&(k!=='km'||v>0)&&(k!=='secs'||v>0)))}:{...a});
+    }
+    activities=[...unique.values()];
     const original=(db.strava||[]).map(x=>({...x}));
     const linkedI=new Set(),linkedS=new Set(),idMap=new Map(),byDay=new Map();
     activities.forEach((a,i)=>{if(a.id&&!idMap.has(a.id))idMap.set(a.id,i);const day=a.date.slice(0,10);if(!byDay.has(day))byDay.set(day,[]);byDay.get(day).push(i)});
@@ -195,8 +202,16 @@
     const last=valid.at(-1);add('circle',{cx:xx(valid.length-1),cy:yy(last[field]),r:5,fill:'#65dec6'});
     const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent='Letzter Wert '+fmt(last[field],2)+' '+unit+' am '+last.date;svg.append(title);el.append(svg);
   }
+  function wellnessMerged(){
+    const map=new Map();
+    for(const row of [...(db.wellness||[]),...(db.liveWellness||[])]) {
+      if(!row?.date)continue;
+      map.set(row.date,{...(map.get(row.date)||{}),...Object.fromEntries(Object.entries(row).filter(([k,v])=>v!==null&&v!==undefined))});
+    }
+    return [...map.values()];
+  }
   function drawWellness(){
-    const weigh=(db.renpho||[]),w=latest(weigh,'weight'),well=db.wellness||[],sleep=latest(well,'sleep'),hrv=latest(well,'hrv'),rest=latest(well,'restingHR');
+    const weigh=(db.renpho||[]),w=latest(weigh,'weight'),well=wellnessMerged(),sleep=latest(well,'sleep'),hrv=latest(well,'hrv'),rest=latest(well,'restingHR');
     $('wellWeight').textContent=w?fmt(w.weight,2)+' kg':'–';$('wellWeightInfo').textContent=w?w.date:'RENPHO importieren';
     $('wellSleep').textContent=sleep?fmt(sleep.sleep,1)+' h':'–';
     $('wellHRV').textContent=hrv?fmt(hrv.hrv,1)+' ms':'–';
@@ -210,12 +225,12 @@
   }
   function drawData(){
     const div=$('importStats');div.replaceChildren();
-    for(const [lab,v] of [['Intervals',db.intervals.length],['Strava',db.strava.length],['Zusammengeführt',activities.length],['RENPHO',db.renpho.length],['Wellness',db.wellness.length]]){
+    for(const [lab,v] of [['Intervals CSV',db.intervals.length],['Intervals API',db.liveIntervals.length],['Strava',db.strava.length],['Zusammengeführt',activities.length],['RENPHO',db.renpho.length],['Wellness',wellnessMerged().length]]){
       const el=document.createElement('div');el.className='mini-stat';const strong=document.createElement('strong');strong.textContent=fmt(v);const small=document.createElement('small');small.textContent=lab;el.append(strong,small);div.append(el)
     }
     $('dataStatus').textContent=activities.length?fmt(activities.length)+' Aktivitäten':'Noch keine Daten';
   }
-  function render(){const agg=aggregate();drawOverview(agg);drawHistory(agg);drawActivities();drawWellness();drawData();if(window.TrainingCoach)window.TrainingCoach.render({db,activities,safeStore});if(window.TrainingIntervalsSync)window.TrainingIntervalsSync.render();}
+  function render(){const agg=aggregate();drawOverview(agg);drawHistory(agg);drawActivities();drawWellness();drawData();if(window.TrainingCoach)window.TrainingCoach.render({db,activities,safeStore});if(window.TrainingIntervalsSync)window.TrainingIntervalsSync.render();if(window.TrainingAutoSync)window.TrainingAutoSync.render({db,rebuild,render,safeStore});}
   function navigate(name){page=name;document.querySelectorAll('.page').forEach(p=>{const active=p.id==='page-'+name;p.classList.toggle('active',active);p.hidden=!active});document.querySelectorAll('[data-nav]').forEach(x=>{const active=x.dataset.nav===name;x.classList.toggle('selected',active);x.setAttribute('aria-current',active?'page':'false')});window.scrollTo({top:0,behavior:'instant'})}
   function message(text,error=false){$('importMessage').textContent=text;$('importMessage').classList.toggle('error',!!error)}
   async function doFile(input,key,parser){
