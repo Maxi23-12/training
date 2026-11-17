@@ -55,8 +55,12 @@
     const date=String(o.id||o.date||'');
     if(!/^\d{4}-\d\d-\d\d$/.test(date))return null;
     const sl=numeric(o.sleepSecs),rv=numeric(o.hrvSDNN??o.hrv),hr=numeric(o.restingHR);
+    const weight=numeric(o.weight);
+    // Intervals.icu fills absent days with the last profile weight (tempWeight).
+    // Those are not new weigh-ins and must not become points on the weight chart.
     return {date,sleep:sl>=3600&&sl<=72000?sl/3600:null,
-      hrv:rv>0&&rv<300?rv:null,restingHR:hr>20&&hr<120?hr:null};
+      hrv:rv>0&&rv<300?rv:null,restingHR:hr>20&&hr<120?hr:null,
+      weight:weight>=30&&weight<=250&&o.tempWeight!==true?weight:null};
   }
   async function getJson(url,key){
     const auth='Basic '+btoa('API_KEY:'+key);
