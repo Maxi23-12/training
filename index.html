@@ -9,10 +9,12 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./training.css?v=0.3.1">
+  <link rel="stylesheet" href="./training.css?v=0.4.0">
+  <link rel="stylesheet" href="./auto-sync.css?v=0.4.0">
   <script defer src="./training.js?v=0.3.1"></script>
-  <script defer src="./intervals-sync.js?v=0.3.1"></script>
-  <script defer src="./app.js?v=0.3.1"></script>
+  <script defer src="./intervals-sync.js?v=0.4.0"></script>
+  <script defer src="./auto-sync.js?v=0.4.0"></script>
+  <script defer src="./app.js?v=0.4.0"></script>
 </head>
 <body>
 <div class="shell">
@@ -234,6 +236,17 @@
         <h1 class="section-title">Daten <em>& Einstellungen.</em></h1>
         <p class="section-lead">Hier kommt deine Trainingsgeschichte ins Cockpit. Alles läuft lokal im Browser.</p>
         <div class="privacy-banner"><strong>🔒 Privat bleibt privat.</strong><span>Alle CSV-Dateien werden ausschließlich auf deinem Gerät gelesen. Die Web-App sendet keine Trainings- oder Gesundheitsdaten an GitHub oder einen anderen Server. Auf jedem Gerät importierst du die Daten separat.</span></div>
+        <div class="panel" id="automaticSyncPanel">
+          <div class="panel-heading"><div><h2>Automatische Aktualisierung · Intervals.icu</h2><p>Neue Einheiten und Erholungswerte übernehmen, ohne jedes Mal CSV-Dateien zu exportieren</p></div><span class="chip">SYNC</span></div>
+          <div class="sync-head">
+            <span id="autoSyncStatus" class="sync-status" role="status" aria-live="polite">Noch keine Synchronisierung ausgeführt</span>
+            <button id="autoSyncNow" class="button primary" type="button">↻ Jetzt aktualisieren</button>
+          </div>
+          <label class="sync-option"><input id="autoSyncEnabled" type="checkbox" checked><span>Beim Öffnen und bei geöffneter App automatisch aktualisieren</span></label>
+          <p id="autoSyncLast" class="chart-foot">Aktuellster Datenstand: importierte CSV-Dateien.</p>
+          <p class="chart-foot">Es wird ausschließlich direkt von Intervals.icu geladen. Die Daten bleiben lokal im Browser, bestehende historische Einträge werden nicht gelöscht. <strong>Einschränkung:</strong> Strava-Aktivitäten dürfen über die Intervals.icu-API nicht vollständig weitergegeben werden und können daher fehlen.</p>
+          <p class="chart-foot">Der bestehende API-Zugang aus <strong>Coaching → Direkt an Intervals.icu senden</strong> wird mitbenutzt. Für ein automatisches Update auch nach einem Browser-Neustart muss der Schlüssel auf dem privaten Gerät ausdrücklich gespeichert sein.</p>
+        </div>
         <div class="panel">
           <div class="panel-heading"><div><h2>Historische Daten importieren</h2><p>CSV-Dateien auswählen · bestehenden Bestand ersetzen oder ergänzen</p></div></div>
           <div class="import-grid">
