@@ -14,7 +14,7 @@
   <script defer src="./training.js?v=0.4.0"></script>
   <script defer src="./intervals-sync.js?v=0.4.0"></script>
   <script defer src="./auto-sync.js?v=0.4.1"></script>
-  <script defer src="./app.js?v=0.4.0"></script>
+  <script defer src="./app.js?v=0.4.2"></script>
 </head>
 <body>
 <div class="shell">
@@ -206,6 +206,7 @@
             <label class="grow">Suche <input type="search" id="activitySearch" placeholder="Name einer Aktivität …"></label>
           </div>
           <p id="activityCount" class="muted"></p>
+          <p id="activityStravaWarning" class="training-notice" hidden></p>
           <div id="activityList" class="activity-list"></div>
           <button id="moreActivities" class="button secondary" hidden>Weitere Aktivitäten laden</button>
         </div>
