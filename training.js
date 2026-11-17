@@ -21,7 +21,7 @@
   ];
   const get=id=>workouts.find(w=>w.id===id)||workouts[1];
   const watt=(pct)=>Math.round((ctx?.db?.settings?.ftp||280)*pct/100);
-  const pctRange=s=>s.replace(/(\d+)\s*[–-]\s*(\d+)\s*%/g,(_,a,b)=>a+'–'+b+' % ('+watt(+a)+'–'+watt(+b)+' W)').replace(/(\d+)\s*%/g,(_,a)=>a+' % ('+watt(+a)+' W)');
+  const pctRange=s=>s.replace(/(\d+)\s*[–-]\s*(\d+)\s*%|(\d+)\s*%/g,(_,a,b,c)=>a!==undefined?a+'–'+b+' % ('+watt(+a)+'–'+watt(+b)+' W)':c+' % ('+watt(+c)+' W)');
   const ageHours=(a,b)=>(a-b)/3600000;
   const startTime=x=>Date.parse(x?.date||'');
   function derive(){
