@@ -4,7 +4,7 @@ Kostenloses, mobiloptimiertes und lokal datenverarbeitendes Trainingscockpit fü
 
 ## Stand
 
-Version 0.3 – Coaching mit Intervals.icu-Kalenderübertragung. Die frühere V0.1 bleibt als Grundansicht erhalten. Im Repository liegen ausschließlich Programmdateien und keine privaten Trainingsdaten.
+Version 0.4 – Coaching mit Intervals.icu-Kalenderübertragung und optionaler automatischer Aktualisierung beim Öffnen. Die frühere V0.1 bleibt als Grundansicht erhalten. Im Repository liegen ausschließlich Programmdateien und keine privaten Trainingsdaten.
 
 ## GitHub Pages aktivieren
 
@@ -34,6 +34,7 @@ Regelmäßig ein privates JSON-Backup exportieren; für den Gerätewechsel auf d
 - Coaching: Tagesform, Zeitbudget, drinnen/draußen, Schwerpunkt, regelbasierter Trainingsvorschlag, FTP-Wattvorgaben und ein flexibler lokaler Wochenplan
 - Coaching: Kurzvergleich 7/28 Tage mit Hinweis auf veraltete Daten; geplante Einheiten können manuell als erledigt/ausgefallen markiert werden
 - Coaching: Ein strukturiertes Workout nach Vorschau und ausdrücklicher Bestätigung direkt per offizieller Intervals.icu-API in den Kalender übertragen (experimentell)
+- Automatischer Abruf von API-zugänglichen Intervals.icu-Aktivitäten und Wellnesswerten beim Öffnen sowie alle 15 Minuten, solange die App sichtbar ist
 - Übersicht: Radkilometer, Radstunden, jüngste Aktivitäten und Trainingsbelastung
 - Historie: Monatsansichten und Jahresvergleiche für Radfahren und Laufen
 - Aktivitäten: Filter nach Jahr, Sportart und Name
@@ -44,7 +45,7 @@ Regelmäßig ein privates JSON-Backup exportieren; für den Gerätewechsel auf d
 
 ## Grenzen der Version 0.1
 
-- Keine automatische Datenquellensynchronisierung
+- Keine vollständige automatische Datenquellensynchronisierung: Aktivitäten, die ursprünglich von Strava kommen, werden von der Intervals.icu-API aus Lizenzgründen nicht an Drittanwendungen weitergegeben
 - Keine automatische Synchronisierung zwischen Handy und PC
 - Keine FIT-Detailauswertung; CSV-Zusammenfassungen als Grundlage
 - Regelbasierte Coaching-Vorschläge sind noch keine automatische KI-Trainingssteuerung; subjektives Feedback und Trainingsergebnisse werden nicht selbstständig ausgewertet
@@ -57,7 +58,7 @@ Regelmäßig ein privates JSON-Backup exportieren; für den Gerätewechsel auf d
 
 GitHub Pages ist öffentlich. Niemals echte Trainings-, Wellness-, Gewichts- oder Backup-Dateien in dieses öffentliche Repository hochladen. Die .gitignore ist ein zusätzlicher Hinweis, keine Zugriffssperre.
 
-Die App ist statisch (HTML, CSS und JavaScript), ohne Backend, Bezahlabos oder Tracking. Datenhaltung über browsergebundenes localStorage.
+Die App ist statisch (HTML, CSS und JavaScript), ohne Backend, Bezahlabos oder Tracking. Datenhaltung über browsergebundenes localStorage. Bei aktiver Synchronisierung erfolgen direkte authentifizierte GET-Anfragen an Intervals.icu; kein Upload von privaten CSV-Dateien an GitHub.
 
 ## Entwicklung
 
@@ -75,3 +76,11 @@ GAM ON! 🚴
 Die Athleten-ID wird automatisch aus dem Namen der importierten Intervals.icu-Aktivitätsdatei erkannt und lokal im Browser gemerkt. Der API-Key wird standardmäßig nur für diesen Browser-Tab in `sessionStorage` behalten. Optional kann der Nutzer ausdrücklich „API-Schlüssel auf diesem Gerät dauerhaft merken“ aktivieren; dann liegt er **unverschlüsselt in `localStorage`**. Diese Option nur auf persönlichen, geschützten Geräten verwenden. Unter „Gespeicherten Zugang entfernen“ lassen sich Athleten-ID und gespeicherte Schlüssel löschen. Kein Schlüssel wird ins GitHub-Repository oder in JSON-Backups übernommen. Die Anfrage geht direkt an `https://intervals.icu/api/v1/athlete/<ID>/events`; kein Proxy oder Zwischenserver. Bei unklaren Verbindungsfehlern erst im Kalender nachsehen, bevor erneut gesendet wird, um Dubletten zu vermeiden.
 
 Die Übertragung setzt einen eigenen Intervals.icu-API-Zugang voraus. Die Funktion wurde bislang technisch integriert, aber noch nicht mit einem echten Konto getestet. Sie verwendet die öffentliche API mit Kalender-Events vom Typ `WORKOUT` und nativer Workout-Beschreibung; die tatsächliche Server-Interpretation sollte beim ersten Versuch kontrolliert werden.
+
+## Automatischer Datenabruf V0.4
+
+In **Daten & Einstellungen → Automatische Aktualisierung** lässt sich die Aktualisierung ein-/ausschalten oder mit **Jetzt aktualisieren** manuell ausführen. Bei vorhandenem API-Zugang fragt die App beim Öffnen sowie während der Nutzung ungefähr alle 15 Minuten die Intervals.icu-Endpunkte `/activities` und `/wellness` ab. Die erste Abfrage deckt die vergangenen 120 Tage ab, spätere Abfragen die vergangenen 60 Tage. Historische importierte Datensätze bleiben erhalten; Dubletten werden abgeglichen. Wellness-Gewichtsplatzhalter werden weiterhin ignoriert; als Gewichtsquelle gilt RENPHO.
+
+**Wichtige Einschränkung:** Die Intervals.icu-API kann Aktivitäten aus Strava-Synchronisierung nicht zuverlässig bzw. aufgrund von Stravas Richtlinien nicht weitergeben. Deshalb ist dies noch **keine vollständige automatische Trainingsaktualisierung**. Die App zeigt die Zahl der von der API gelieferten Aktivitäten und die letzte erfolgreiche Prüfung; neue Strava-Einheiten erfordern vorerst gelegentliche ergänzende CSV-Exporte oder später eine separate, zulässige Direktintegration.
+
+Ohne lokal verfügbaren API-Schlüssel kann kein Hintergrundabruf erfolgen. Für die Aktualisierung nach einem Browser-Neustart muss der Schlüssel auf einem **privaten, geschützten Gerät** ausdrücklich dauerhaft gespeichert werden; er liegt dann unverschlüsselt im Browserspeicher. Ein Browser-Tab kann nur während der Nutzung aktualisieren; es gibt **keinen** dauerhaft laufenden Synchronisierungsdienst und keinen geräteübergreifenden Abgleich. Die API-Aktualisierung ist technisch integriert, aber noch nicht an deinem Konto live getestet.
