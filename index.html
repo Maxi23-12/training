@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1422">
+  <meta name="description" content="Privates, lokal betriebenes Trainingscockpit für Radfahren, Laufen und Erholung.">
+  <title>TRAINING · Performance Cockpit</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="#uebersicht" aria-label="TRAINING – Startseite">
+      <span class="brand-icon">T<span class="brand-dot">.</span></span>
+      <span><strong>TRAINING</strong><small>PERFORMANCE LAB</small></span>
+    </a>
+    <div class="nav-caption">COCKPIT</div>
+    <nav class="desktop-nav" aria-label="Hauptnavigation">
+      <button data-nav="overview" class="navbtn selected"><span class="nav-icon">◫</span> Übersicht</button>
+      <button data-nav="history" class="navbtn"><span class="nav-icon">▥</span> Historie</button>
+      <button data-nav="activities" class="navbtn"><span class="nav-icon">≡</span> Aktivitäten</button>
+      <button data-nav="wellness" class="navbtn"><span class="nav-icon">♡</span> Erholung & Gewicht</button>
+      <button data-nav="data" class="navbtn"><span class="nav-icon">⚙</span> Daten & Einstellungen</button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="eyebrow">GAM ON! 🚴</div>
+      <p>Mehr als Wintertraining.<br>Deine gesamte sportliche Entwicklung.</p>
+      <p class="privacy-tip">🔒 Daten nur auf diesem Gerät</p>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div class="topbar-title"><span class="topbar-dot"></span><span>TRAINING <span class="slash">/</span> DEIN COCKPIT</span></div>
+      <div class="topbar-actions">
+        <span id="dataStatus" class="status">Noch keine Daten</span>
+        <button id="quickImport" class="small-button">+ Daten laden</button>
+      </div>
+    </header>
+    <main class="content">
+      <section class="page active" id="page-overview">
+        <div class="hero">
+          <div><div class="eyebrow">PERSONAL PERFORMANCE</div><h1>Dein Training.<br><em>Deine Entwicklung.</em></h1><p>Radfahren, Laufen und Regeneration – über Jahre hinweg, an einem Ort.</p></div>
+          <span class="hero-stamp">EST. 2013 <span>◆</span> GAM ON!</span>
+        </div>
+        <div class="empty-notice" id="firstStart">
+          <div class="empty-icon">↗</div>
+          <div><strong>Willkommen in deinem Trainingscockpit!</strong><p>Importiere zunächst deine Intervals.icu-, Strava-, RENPHO- und Wellness-CSV-Dateien. Alles wird direkt auf deinem Gerät verarbeitet – niemals zu GitHub hochgeladen.</p></div>
+          <button class="button primary" data-go="data">Daten importieren</button>
+        </div>
+        <div class="kpi-grid">
+          <article class="panel kpi"><span class="kpi-label">Radkilometer dieses Jahr <span>↗</span></span><div id="kpiKm" class="kpi-value">–</div><div id="kpiKmNote" class="kpi-note">CSV-Dateien importieren</div></article>
+          <article class="panel kpi"><span class="kpi-label">Radstunden dieses Jahr</span><div id="kpiHours" class="kpi-value">–</div><div class="kpi-note">Aufzeichnungszeiten bereinigt</div></article>
+          <article class="panel kpi"><span class="kpi-label">Trainingsbelastung · 7 Tage</span><div id="kpiLoad" class="kpi-value">–</div><div class="kpi-note">Vorhandene Intervals.icu-Last</div></article>
+          <article class="panel kpi"><span class="kpi-label">Letztes Gewicht</span><div id="kpiWeight" class="kpi-value">–</div><div id="kpiWeightNote" class="kpi-note">Echte RENPHO-Werte</div></article>
+        </div>
+        <div class="two-col">
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Deine Jahreskilometer</h2><p>Historischer Verlauf · Radfahren</p></div><span class="chip">RAD</span></div>
+            <div id="overviewYears" class="chart" aria-label="Radkilometer im Jahresvergleich"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Trainingspuls</h2><p>Deine vergangenen 12 Wochen</p></div><span class="chip soft">LOAD</span></div>
+            <div id="overviewWeeks" class="chart"></div>
+            <p class="chart-foot">Belastung wird nur dort summiert, wo sie in Intervals.icu tatsächlich vorliegt.</p>
+          </article>
+        </div>
+        <div class="two-col">
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Zuletzt aufgezeichnet</h2><p>Deine neuesten Einheiten</p></div><button class="text-button" data-go="activities">Alle ansehen →</button></div>
+            <div id="recentActivities" class="activity-list"></div>
+          </article>
+          <article class="panel coach-panel">
+            <div class="panel-heading"><div><h2>Coach Desk</h2><p>Einordnung statt Zahlenfriedhof</p></div><span class="coach-emoji">🚴</span></div>
+            <div id="coachNotes" class="coach-notes"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" id="page-history" hidden>
+        <div class="eyebrow">LONG-TERM PERFORMANCE</div>
+        <h1 class="section-title">Deine <em>Trainingshistorie.</em></h1>
+        <p class="section-lead">Jahre vergleichen, Monatsmuster erkennen und Umfang richtig einordnen.</p>
+        <div class="panel">
+          <div class="controls-row">
+            <label>Trainingsjahr <select id="historyYear"><option value="">Daten laden</option></select></label>
+            <label>Messgröße <select id="historyMetric"><option value="km">Radkilometer</option><option value="hours">Radstunden</option><option value="runKm">Laufkilometer</option><option value="load">Trainingsbelastung</option></select></label>
+          </div>
+          <div class="panel-heading"><div><h2 id="historyTitle">Monatsübersicht</h2><p id="historySub">Dein Jahr im Detail</p></div></div>
+          <div id="historyChart" class="chart tall"></div>
+          <div id="historyStats" class="stat-strip"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-heading"><div><h2>Jahresvergleich</h2><p>Radumfang, Laufumfang und Trainingsbelastung</p></div></div>
+          <div class="table-scroll"><table class="data-table"><thead><tr><th>Jahr</th><th>Radkilometer</th><th>Radstunden</th><th>Laufkilometer</th><th>Aktivitäten</th><th>Belastung*</th></tr></thead><tbody id="annualTable"></tbody></table></div>
+          <p class="chart-foot">*Nur vorhandene Intervals.icu-Belastungswerte. Fahrzeit-Korrektur bei auffälligen Pendelaufzeichnungen; keine erfundenen Watt- oder TSS-Werte.</p>
+        </div>
+      </section>
+
+      <section class="page" id="page-activities" hidden>
+        <div class="eyebrow">ACTIVITY EXPLORER</div>
+        <h1 class="section-title">Alle <em>Aktivitäten.</em></h1>
+        <p class="section-lead">Strava und Intervals.icu zusammengeführt – Dubletten werden vermieden.</p>
+        <div class="panel">
+          <div class="controls-row">
+            <label>Sport <select id="activitySport"><option value="all">Alle Sportarten</option><option value="bike">Radfahren</option><option value="run">Laufen</option><option value="other">Sonstiges</option></select></label>
+            <label>Jahr <select id="activityYear"><option value="all">Alle Jahre</option></select></label>
+            <label class="grow">Suche <input type="search" id="activitySearch" placeholder="Name einer Aktivität …"></label>
+          </div>
+          <p id="activityCount" class="muted"></p>
+          <div id="activityList" class="activity-list"></div>
+          <button id="moreActivities" class="button secondary" hidden>Weitere Aktivitäten laden</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-wellness" hidden>
+        <div class="eyebrow">RECOVERY & LONGEVITY</div>
+        <h1 class="section-title">Erholung <em>& Gewicht.</em></h1>
+        <p class="section-lead">Echte Messwerte statt Platzhalter – mit Blick auf langfristige Trends.</p>
+        <div class="kpi-grid">
+          <article class="panel kpi"><span class="kpi-label">Letztes Gewicht</span><div id="wellWeight" class="kpi-value">–</div><div id="wellWeightInfo" class="kpi-note">RENPHO</div></article>
+          <article class="panel kpi"><span class="kpi-label">Letzte Schlafdauer</span><div id="wellSleep" class="kpi-value">–</div><div class="kpi-note">Intervals.icu Wellness</div></article>
+          <article class="panel kpi"><span class="kpi-label">Letzte HRV (SDNN)</span><div id="wellHRV" class="kpi-value">–</div><div class="kpi-note">In Millisekunden</div></article>
+          <article class="panel kpi"><span class="kpi-label">Letzter Ruhepuls</span><div id="wellRest" class="kpi-value">–</div><div class="kpi-note">Schläge pro Minute</div></article>
+        </div>
+        <div class="panel">
+          <div class="controls-row">
+            <label>Darstellung <select id="wellMetric"><option value="weight">Gewicht · RENPHO</option><option value="sleep">Schlafdauer</option><option value="hrv">HRV (SDNN)</option><option value="restingHR">Ruhepuls</option></select></label>
+            <label>Zeitraum <select id="wellPeriod"><option value="all">Gesamte Historie</option><option value="365">Letzte 12 Monate</option><option value="180">Letzte 6 Monate</option><option value="90">Letzte 90 Tage</option></select></label>
+          </div>
+          <div id="wellChart" class="chart line-chart"></div>
+          <p class="chart-foot">Gewicht ausschließlich aus RENPHO; Wellness-Tage ohne Messwert werden ausgelassen. Eine niedrige HRV allein ist kein Trainingsverbot.</p>
+        </div>
+      </section>
+
+      <section class="page" id="page-data" hidden>
+        <div class="eyebrow">YOUR DATA, YOUR RULES</div>
+        <h1 class="section-title">Daten <em>& Einstellungen.</em></h1>
+        <p class="section-lead">Hier kommt deine Trainingsgeschichte ins Cockpit. Alles läuft lokal im Browser.</p>
+        <div class="privacy-banner"><strong>🔒 Privat bleibt privat.</strong><span>Alle CSV-Dateien werden ausschließlich auf deinem Gerät gelesen. Die Web-App sendet keine Trainings- oder Gesundheitsdaten an GitHub oder einen anderen Server. Auf jedem Gerät importierst du die Daten separat.</span></div>
+        <div class="panel">
+          <div class="panel-heading"><div><h2>Historische Daten importieren</h2><p>CSV-Dateien auswählen · bestehenden Bestand ersetzen oder ergänzen</p></div></div>
+          <div class="import-grid">
+            <label class="file-pick"><span class="file-icon">▥</span><strong>Intervals.icu · Aktivitäten</strong><small>i114427_activities.csv</small><input type="file" accept=".csv,text/csv" id="fileIntervals"></label>
+            <label class="file-pick"><span class="file-icon">◈</span><strong>Strava · Aktivitäten</strong><small>activities.csv</small><input type="file" accept=".csv,text/csv" id="fileStrava"></label>
+            <label class="file-pick"><span class="file-icon">♡</span><strong>RENPHO · Gewicht</strong><small>RENPHO Health-….csv</small><input type="file" accept=".csv,text/csv" id="fileRenpho"></label>
+            <label class="file-pick"><span class="file-icon">☾</span><strong>Intervals.icu · Wellness</strong><small>athlete_…wellness.csv</small><input type="file" accept=".csv,text/csv" id="fileWellness"></label>
+          </div>
+          <div id="importMessage" class="form-message" role="status" aria-live="polite">Noch keine Dateien ausgewählt.</div>
+          <div id="importStats" class="stat-strip"></div>
+        </div>
+        <div class="two-col">
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Persönliche Trainingswerte</h2><p>Jederzeit hier veränderbar</p></div></div>
+            <div class="controls-row">
+              <label>Indoor-FTP (W) <input type="number" id="settingFTP" min="100" max="600" step="1" value="280"></label>
+              <label>HFmax (bpm) <input type="number" id="settingHR" min="120" max="240" step="1" value="194"></label>
+            </div>
+            <button id="saveSettings" class="button primary">Einstellungen speichern</button>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Sichern & Wiederherstellen</h2><p>Gerätewechsel, PC ↔ Handy, Backups</p></div></div>
+            <div class="button-stack">
+              <button id="exportBackup" class="button secondary">↓ Privates JSON-Backup herunterladen</button>
+              <label class="button secondary file-button">↑ JSON-Backup auf diesem Gerät einspielen<input type="file" accept=".json,application/json" id="importBackup"></label>
+              <button id="clearData" class="button danger">Lokale Daten dieses Geräts löschen</button>
+            </div>
+            <p class="chart-foot">Die Sicherung enthält persönliche Daten. Nicht in das öffentliche GitHub-Repository hochladen.</p>
+          </article>
+        </div>
+        <div class="panel">
+          <div class="panel-heading"><div><h2>Was kann diese Version?</h2><p>Transparenz zum aktuellen Entwicklungsstand</p></div></div>
+          <div class="feature-list"><span>✓ Mobiloptimiert</span><span>✓ Kostenloses Hosting möglich</span><span>✓ CSV-Import lokal</span><span>✓ Historische Datenbereinigung</span><span>✓ Browser-Speicherung</span><span>✓ JSON-Backup</span><span>◌ Geräte-Synchronisierung noch nicht verfügbar</span><span>◌ Vollständige FIT-Detailauswertung folgt später</span></div>
+        </div>
+        <p class="footer-note">TRAINING · Performance Lab. Kostenloses, eigenständig betriebenes Dashboard. Trainingswerte sind Orientierungsdaten und ersetzen keine medizinische Beurteilung.</p>
+      </section>
+    </main>
+  </div>
+</div>
+<nav class="mobile-nav" aria-label="Mobile Navigation">
+  <button data-nav="overview" class="navbtn selected"><span>◫</span><small>Start</small></button>
+  <button data-nav="history" class="navbtn"><span>▥</span><small>Historie</small></button>
+  <button data-nav="activities" class="navbtn"><span>≡</span><small>Training</small></button>
+  <button data-nav="wellness" class="navbtn"><span>♡</span><small>Erholung</small></button>
+  <button data-nav="data" class="navbtn"><span>⚙</span><small>Daten</small></button>
+</nav>
+</body>
+</html>
