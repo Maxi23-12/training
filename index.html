@@ -9,10 +9,10 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./training.css?v=0.3.0">
-  <script defer src="./training.js?v=0.3.0"></script>
-  <script defer src="./intervals-sync.js?v=0.3.0"></script>
-  <script defer src="./app.js?v=0.3.0"></script>
+  <link rel="stylesheet" href="./training.css?v=0.3.1">
+  <script defer src="./training.js?v=0.3.1"></script>
+  <script defer src="./intervals-sync.js?v=0.3.1"></script>
+  <script defer src="./app.js?v=0.3.1"></script>
 </head>
 <body>
 <div class="shell">
@@ -130,12 +130,16 @@
 
         <article class="panel" id="intervalsConnectCard">
           <div class="panel-heading"><div><h2>Direkt an Intervals.icu senden</h2><p>Training mit allen Intervallen in den Kalender übernehmen</p></div><span class="chip">API · EXPERIMENTELL</span></div>
-          <p class="chart-foot">Die Verbindung verwendet ausschließlich die offizielle Intervals.icu-API. Dein API-Schlüssel bleibt nur während dieses Vorgangs im Browser und wird nicht gespeichert. Bitte niemals den Schlüssel in GitHub oder ChatGPT teilen.</p>
+          <p class="chart-foot">Die Athleten-ID wird automatisch aus deiner Intervals.icu-Aktivitätsdatei erkannt und auf diesem Gerät gemerkt. Der API-Schlüssel bleibt standardmäßig nur für diesen Browser-Tab verfügbar. Wenn du ihn dauerhaft speichern möchtest, kannst du das ausdrücklich aktivieren – bitte nur auf einem privaten Gerät.</p>
           <div class="controls-row training-fields">
-            <label>Intervals.icu Athleten-ID <input id="icuUploadAthlete" type="text" inputmode="text" spellcheck="false" maxlength="30" placeholder="z. B. i123456" autocomplete="off"></label>
-            <label>Persönlicher API-Schlüssel <input id="icuUploadKey" type="password" spellcheck="false" placeholder="Nur für diese Übertragung" autocomplete="off"></label>
+            <label>Intervals.icu Athleten-ID <input id="icuUploadAthlete" type="text" inputmode="text" spellcheck="false" maxlength="30" placeholder="z. B. i123456" autocomplete="username"></label>
+            <label>Persönlicher API-Schlüssel <input id="icuUploadKey" type="password" spellcheck="false" placeholder="API-Schlüssel" autocomplete="off"></label>
             <label>Trainingstag <input id="icuUploadDate" type="date"></label>
             <label>Trainingseinheit <select id="icuUploadWorkout"></select></label>
+          </div>
+          <div class="icu-remember">
+            <label class="icu-remember-choice"><input id="icuRememberKey" type="checkbox"> <span><strong>API-Schlüssel auf diesem Gerät dauerhaft merken</strong><small>Optional. Der Schlüssel wird dann unverschlüsselt im Browserspeicher abgelegt. Nicht auf gemeinsamen oder fremden Geräten verwenden!</small></span></label>
+            <div class="training-actions"><button class="button secondary" id="icuSaveConnection" type="button">Zugang merken</button><button class="button secondary" id="icuForgetConnection" type="button">Gespeicherten Zugang entfernen</button></div>
           </div>
           <div class="training-actions">
             <button class="button secondary" id="icuUploadPreview">Vorschau anzeigen</button>
