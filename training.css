@@ -56,3 +56,10 @@
 #icuUploadMessage{min-height:22px}
 #icuUploadMessage.error{color:#f6a9b5}
 #icuUploadMessage.success{color:#85e6cc}
+
+.icu-remember{border:1px solid #375065;border-radius:12px;background:#102737;padding:12px 14px;margin:5px 0 13px}
+.icu-remember-choice{display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:12px;line-height:1.45;color:#d5e5ef}
+.icu-remember-choice input{width:17px;height:17px;flex:0 0 17px;accent-color:#65dec6;margin:2px 0 0}
+.icu-remember-choice strong{display:block;font-size:12px}
+.icu-remember-choice small{display:block;color:#94abbc;font-size:11px;margin-top:4px}
+.icu-remember .training-actions{margin:12px 0 0}
