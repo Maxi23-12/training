@@ -4,7 +4,7 @@ Kostenloses, mobiloptimiertes und lokal datenverarbeitendes Trainingscockpit fü
 
 ## Stand
 
-Version 0.2 – Coaching-Bereich mit flexibler Trainingsplanung. Die frühere V0.1 bleibt als Grundansicht erhalten. Im Repository liegen ausschließlich Programmdateien und keine privaten Trainingsdaten.
+Version 0.3 – Coaching mit Intervals.icu-Kalenderübertragung. Die frühere V0.1 bleibt als Grundansicht erhalten. Im Repository liegen ausschließlich Programmdateien und keine privaten Trainingsdaten.
 
 ## GitHub Pages aktivieren
 
@@ -33,6 +33,7 @@ Regelmäßig ein privates JSON-Backup exportieren; für den Gerätewechsel auf d
 
 - Coaching: Tagesform, Zeitbudget, drinnen/draußen, Schwerpunkt, regelbasierter Trainingsvorschlag, FTP-Wattvorgaben und ein flexibler lokaler Wochenplan
 - Coaching: Kurzvergleich 7/28 Tage mit Hinweis auf veraltete Daten; geplante Einheiten können manuell als erledigt/ausgefallen markiert werden
+- Coaching: Ein strukturiertes Workout nach Vorschau und ausdrücklicher Bestätigung direkt per offizieller Intervals.icu-API in den Kalender übertragen (experimentell)
 - Übersicht: Radkilometer, Radstunden, jüngste Aktivitäten und Trainingsbelastung
 - Historie: Monatsansichten und Jahresvergleiche für Radfahren und Laufen
 - Aktivitäten: Filter nach Jahr, Sportart und Name
@@ -63,3 +64,14 @@ Die App ist statisch (HTML, CSS und JavaScript), ohne Backend, Bezahlabos oder T
 Layout: styles.css · Oberfläche: index.html · Logik: app.js.
 
 GAM ON! 🚴
+## Intervals.icu Kalenderübertragung (experimentell)
+
+1. Coaching → **Direkt an Intervals.icu senden** öffnen.
+2. In Intervals.icu unter **Settings → Developer Settings** einen persönlichen API-Key erstellen.
+3. Athleten-ID (Format `i123456`) und API-Key in das Formular im TRAINING-Cockpit eingeben – **niemals** im Chat oder GitHub.
+4. Datum und Workout auswählen → Vorschau anzeigen → Senden ausdrücklich bestätigen.
+5. Im Intervals.icu-Kalender prüfen, ob das geplante Workout korrekt angekommen ist.
+
+Der API-Key wird **nicht** in `localStorage`, Downloads, GitHub oder dem Trainings-Backup gespeichert. Er wird beim erfolgreichen Senden und auch bei Verbindungsfehlern aus dem Feld gelöscht. Die Anfrage geht direkt an `https://intervals.icu/api/v1/athlete/<ID>/events`; kein Proxy oder Zwischenserver. Bei unklaren Verbindungsfehlern erst im Kalender nachsehen, bevor erneut gesendet wird, um Dubletten zu vermeiden.
+
+Die Übertragung setzt einen eigenen Intervals.icu-API-Zugang voraus. Die Funktion wurde bislang technisch integriert, aber noch nicht mit einem echten Konto getestet. Sie verwendet die öffentliche API mit Kalender-Events vom Typ `WORKOUT` und nativer Workout-Beschreibung; die tatsächliche Server-Interpretation sollte beim ersten Versuch kontrolliert werden.
