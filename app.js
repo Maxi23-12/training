@@ -129,7 +129,43 @@
         byUtcDay.get(day).push(i);
       }
     }
-    activities=reconciled;
+    // Fallback for historic snapshots where the same distinctive workout has
+    // a very different stored start time. Only exact titles on the same visible
+    // calendar day, with nearly identical distance AND duration, qualify.
+    // Generic names ("Radfahren", "Mittagslauf", etc.) are intentionally excluded.
+    const fingerprinted=[],fingerprintDays=new Map();
+    for(const a of reconciled){
+      const time=safeTime(a.date),title=norm(a.name);
+      const distinctive=title.length>=8&&(/\d/.test(a.name)||title.length>=15&&/\s/.test(a.name))&&
+        !['radfahren','cycling','mittagfahrt','mittagslauf','laufen','commute','training'].includes(title);
+      if(time===null||!distinctive||!['bike','run'].includes(a.sport)||!(a.km>0&&a.secs>0)){
+        fingerprinted.push(a);continue;
+      }
+      const key=dstr(time)+'|'+a.sport+'|'+title;
+      let found=-1;
+      for(const i of (fingerprintDays.get(key)||[])){
+        const b=fingerprinted[i];
+        const distanceDiff=Math.abs(a.km-b.km);
+        const durationDiff=Math.abs(a.secs-b.secs);
+        if(distanceDiff<=Math.max(.10,Math.min(a.km,b.km)*.002)&&
+           durationDiff<=Math.max(75,Math.min(a.secs,b.secs)*.012)){
+          found=i;break;
+        }
+      }
+      if(found<0){
+        const i=fingerprinted.push(a)-1;
+        if(!fingerprintDays.has(key))fingerprintDays.set(key,[]);
+        fingerprintDays.get(key).push(i);
+      }else{
+        const previous=fingerprinted[found];
+        const preferred=liveIds.has(String(a.id))?a:previous;
+        const fallback=preferred===a?previous:a;
+        fingerprinted[found]={...fallback,...Object.fromEntries(Object.entries(preferred).filter(([k,v])=>
+          v!==null&&v!==undefined&&(!['km','secs','load','watts','np','hr'].includes(k)||v>0)))};
+        collapsed++;
+      }
+    }
+    activities=fingerprinted;
     db._intervalDuplicatesCollapsed=collapsed;
     const original=(db.strava||[]).map(x=>({...x}));
     const linkedI=new Set(),linkedS=new Set(),idMap=new Map(),byDay=new Map();
@@ -232,7 +268,8 @@
   function drawActivities(){
     let year=$('activityYear').value,sport=$('activitySport').value,term=$('activitySearch').value.toLowerCase().trim();
     const list=activities.filter(a=>(year==='all'||a.date.startsWith(year))&&(sport==='all'||a.sport===sport)&&a.name.toLowerCase().includes(term));
-    $('activityCount').textContent=fmt(list.length)+' Aktivitäten';
+    $('activityCount').textContent=fmt(list.length)+' Aktivitäten'+
+      (db._intervalDuplicatesCollapsed?' · '+fmt(db._intervalDuplicatesCollapsed)+' Doppelimporte ausgeblendet':'');
     const warning=$('activityStravaWarning');
     if(warning){
       const count=db.autoSync?.protectedStravaCount||0;
