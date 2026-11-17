@@ -215,7 +215,7 @@
     }
     $('dataStatus').textContent=activities.length?fmt(activities.length)+' Aktivitäten':'Noch keine Daten';
   }
-  function render(){const agg=aggregate();drawOverview(agg);drawHistory(agg);drawActivities();drawWellness();drawData()}
+  function render(){const agg=aggregate();drawOverview(agg);drawHistory(agg);drawActivities();drawWellness();drawData();if(window.TrainingCoach)window.TrainingCoach.render({db,activities,safeStore});}
   function navigate(name){page=name;document.querySelectorAll('.page').forEach(p=>{const active=p.id==='page-'+name;p.classList.toggle('active',active);p.hidden=!active});document.querySelectorAll('[data-nav]').forEach(x=>{const active=x.dataset.nav===name;x.classList.toggle('selected',active);x.setAttribute('aria-current',active?'page':'false')});window.scrollTo({top:0,behavior:'instant'})}
   function message(text,error=false){$('importMessage').textContent=text;$('importMessage').classList.toggle('error',!!error)}
   async function doFile(input,key,parser){
