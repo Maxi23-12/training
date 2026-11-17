@@ -186,6 +186,17 @@
     let year=$('activityYear').value,sport=$('activitySport').value,term=$('activitySearch').value.toLowerCase().trim();
     const list=activities.filter(a=>(year==='all'||a.date.startsWith(year))&&(sport==='all'||a.sport===sport)&&a.name.toLowerCase().includes(term));
     $('activityCount').textContent=fmt(list.length)+' Aktivitäten';
+    const warning=$('activityStravaWarning');
+    if(warning){
+      const count=db.autoSync?.protectedStravaCount||0;
+      warning.hidden=!(db.autoSync?.lastSuccess);
+      if(!warning.hidden){
+        const parts=['Automatische Intervals.icu-Aktualisierung ist nur teilweise vollständig: Strava-geschützte Aktivitäten werden über die API nicht mit ihren Originaldaten ausgeliefert.'];
+        if(count)parts.push(count+' geschützte Strava-Platzhalter wurden beim letzten Abruf ausgelassen.');
+        parts.push('Deshalb können neuere Einheiten hier fehlen, obwohl sie im Intervals.icu-Kalender sichtbar sind. Historische CSV-Daten bleiben erhalten.');
+        warning.textContent=parts.join(' ');
+      }
+    }
     const el=$('activityList');el.replaceChildren();for(const a of list.slice(0,activityShown))el.append(activityMarkup(a));
     if(!list.length)el.innerHTML='<div class="empty-chart">Keine passenden Aktivitäten vorhanden.</div>';
     $('moreActivities').hidden=list.length<=activityShown;
