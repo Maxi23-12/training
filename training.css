@@ -1,0 +1,53 @@
+
+/* TRAINING COACH · V0.2 */
+.training-notice{margin:0 0 15px;padding:12px 15px;border:1px solid #34566a;background:#112a3a;border-radius:12px;color:#b8d2df;font-size:12px;line-height:1.6}
+.training-notice strong{color:#80e2d0}
+.training-columns{grid-template-columns:1.12fr 1fr}
+.training-fields{margin-bottom:13px}
+.training-fields label{min-width:145px}
+.training-suggestion{border:1px solid #376c65;background:linear-gradient(130deg,#123d39,#142c3c);padding:17px;border-radius:14px;margin-top:14px}
+.training-suggestion .sup{font-size:10px;letter-spacing:1.6px;font-weight:800;color:#89e6d3}
+.training-suggestion h3{font-size:19px;letter-spacing:-.35px;margin:7px 0 8px}
+.training-suggestion p{font-size:12px;color:#c4d9df;line-height:1.6;margin:6px 0}
+.training-suggestion .reason{border-left:3px solid #71e3cd;background:#143a3c;margin:12px 0 4px;padding:9px 12px}
+.training-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.training-insight p{line-height:1.65;font-size:12px;color:#bbd0de;margin:9px 0}
+.training-insight strong{color:#8debd7}
+.separator-line{height:1px;background:#2b4354;margin:17px 0}
+.training-small-title{font-size:13px;margin:4px 0 11px}
+.training-recent{display:grid;gap:8px}
+.training-recent .recent-row{display:grid;grid-template-columns:69px minmax(0,1fr) auto;gap:9px;align-items:center;font-size:11px;border-bottom:1px solid #293c4f;padding:6px 0}
+.training-recent .recent-row time{color:#97b0c3}
+.training-recent .recent-row span{white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.training-recent .recent-row b{font-size:11px}
+.training-workouts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.training-workout{display:flex;flex-direction:column;text-align:left;border:1px solid #315166;color:#dbeaf5;background:#122a3e;border-radius:11px;padding:12px;gap:4px;cursor:pointer;min-width:0}
+.training-workout:hover,.training-workout.selected{border-color:#65dec6;background:#16413f}
+.training-workout strong{font-size:12px}
+.training-workout small{color:#99b3c6;font-size:10px}
+.training-workout-detail{border:1px solid #314d61;border-radius:12px;background:#0e2030;padding:14px;margin-top:12px}
+.training-workout-detail h3{margin:0 0 6px;font-size:16px;color:#eaf3fb}
+.training-workout-detail p{color:#b4cddb;font-size:12px;line-height:1.6;margin:7px 0}
+.training-workout-detail .workout-meter{display:flex;gap:3px;align-items:end;height:64px;margin:15px 0 10px}
+.training-workout-detail .workout-meter span{border-radius:4px 4px 0 0;background:#4caeaa;min-width:2px}
+.training-workout-detail .workout-meter span.hard{background:#f2ae79}
+.training-workout-detail .workout-blocks{display:grid;gap:7px;margin:13px 0}
+.training-workout-detail .workout-block{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #2a4254;padding:7px 0;font-size:11px}
+.training-workout-detail .workout-block span:first-child{color:#a4bece}
+.training-workout-detail .workout-block b{text-align:right}
+.training-plan-list{display:grid;gap:9px}
+.training-plan-entry{padding:11px 12px;border:1px solid #345064;border-radius:11px;background:#122637}
+.training-plan-entry.done{opacity:.7}
+.training-plan-entry .line{display:flex;align-items:start;gap:8px;justify-content:space-between}
+.training-plan-entry strong{font-size:12px}
+.training-plan-entry time{color:#9db4c9;font-size:11px;white-space:nowrap}
+.training-plan-entry p{font-size:11px;color:#bbcbda;margin:6px 0}
+.training-plan-entry .actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.training-plan-entry button{border:1px solid #456277;background:#1b3547;color:#dfebf4;border-radius:8px;padding:6px 9px;font-size:10px;cursor:pointer}
+.training-plan-entry button.active{border-color:#3f826b;background:#185645;color:#aaedce}
+.training-plan-entry button.delete{border-color:#714456;color:#f5b3c1;background:#302334}
+.training-plan-message{font-size:11px;color:#9ab6cb;min-height:18px;margin:8px 0}
+.training-plan-message.success{color:#83e2ca}
+.training-empty{color:#96afc3;font-size:12px;border:1px dashed #385367;border-radius:11px;padding:14px}
+@media(max-width:1170px){.training-columns{grid-template-columns:1fr}}
+@media(max-width:650px){.training-workouts{grid-template-columns:1fr 1fr}.training-actions .button{flex:1}.training-recent .recent-row{grid-template-columns:61px minmax(0,1fr) 50px}.training-workout{padding:10px}.training-workout-detail .workout-block{align-items:start;flex-direction:column;gap:3px}}
