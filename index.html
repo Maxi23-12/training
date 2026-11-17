@@ -9,9 +9,10 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./training.css?v=0.2.1">
-  <script defer src="./training.js?v=0.2.1"></script>
-  <script defer src="./app.js?v=0.2.1"></script>
+  <link rel="stylesheet" href="./training.css?v=0.3.0">
+  <script defer src="./training.js?v=0.3.0"></script>
+  <script defer src="./intervals-sync.js?v=0.3.0"></script>
+  <script defer src="./app.js?v=0.3.0"></script>
 </head>
 <body>
 <div class="shell">
@@ -126,6 +127,24 @@
             <div id="trainRecent" class="training-recent"></div>
           </article>
         </div>
+
+        <article class="panel" id="intervalsConnectCard">
+          <div class="panel-heading"><div><h2>Direkt an Intervals.icu senden</h2><p>Training mit allen Intervallen in den Kalender übernehmen</p></div><span class="chip">API · EXPERIMENTELL</span></div>
+          <p class="chart-foot">Die Verbindung verwendet ausschließlich die offizielle Intervals.icu-API. Dein API-Schlüssel bleibt nur während dieses Vorgangs im Browser und wird nicht gespeichert. Bitte niemals den Schlüssel in GitHub oder ChatGPT teilen.</p>
+          <div class="controls-row training-fields">
+            <label>Intervals.icu Athleten-ID <input id="icuUploadAthlete" type="text" inputmode="text" spellcheck="false" maxlength="30" placeholder="z. B. i123456" autocomplete="off"></label>
+            <label>Persönlicher API-Schlüssel <input id="icuUploadKey" type="password" spellcheck="false" placeholder="Nur für diese Übertragung" autocomplete="off"></label>
+            <label>Trainingstag <input id="icuUploadDate" type="date"></label>
+            <label>Trainingseinheit <select id="icuUploadWorkout"></select></label>
+          </div>
+          <div class="training-actions">
+            <button class="button secondary" id="icuUploadPreview">Vorschau anzeigen</button>
+            <button class="button primary" id="icuUploadSend">An Intervals.icu senden</button>
+          </div>
+          <div id="icuUploadMessage" class="training-plan-message" role="status" aria-live="polite">Die Übertragung erfolgt ausschließlich nach deiner Bestätigung.</div>
+          <pre id="icuUploadDescription" class="icu-upload-preview" hidden></pre>
+          <p class="chart-foot">Hinweis: Für die Übertragung ist eine aktive Internetverbindung erforderlich. Die Intervals.icu-Webschnittstelle unterstützt CORS für ihre öffentlichen /api/v1/-Endpunkte. Nach dem Übertragen kannst du den Eintrag im Kalender prüfen. Bei unklarer Fehlermeldung erst im Kalender nachsehen, bevor du erneut sendest.</p>
+        </article>
 
         <div class="two-col training-columns">
           <article class="panel">
