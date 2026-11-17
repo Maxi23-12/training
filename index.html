@@ -12,10 +12,11 @@
   <link rel="stylesheet" href="./training.css?v=0.4.0">
   <link rel="stylesheet" href="./auto-sync.css?v=0.4.0">
   <link rel="stylesheet" href="./overview.css?v=0.5.0">
+  <link rel="stylesheet" href="./chart-interactions.css?v=0.5.1">
   <script defer src="./training.js?v=0.4.0"></script>
   <script defer src="./intervals-sync.js?v=0.4.0"></script>
   <script defer src="./auto-sync.js?v=0.4.2"></script>
-  <script defer src="./app.js?v=0.5.0"></script>
+  <script defer src="./app.js?v=0.5.1"></script>
 </head>
 <body>
 <div class="shell">
@@ -278,7 +279,7 @@
             <label>Zeitraum <select id="wellPeriod"><option value="all">Gesamte Historie</option><option value="365">Letzte 12 Monate</option><option value="180">Letzte 6 Monate</option><option value="90">Letzte 90 Tage</option></select></label>
           </div>
           <div id="wellChart" class="chart line-chart"></div>
-          <p class="chart-foot">Gewicht ausschließlich aus RENPHO; Wellness-Tage ohne Messwert werden ausgelassen. Eine niedrige HRV allein ist kein Trainingsverbot.</p>
+          <p class="chart-foot">Gewicht aus RENPHO und Intervals.icu; fehlende Wellnesswerte werden ausgelassen. Eine niedrige HRV allein ist kein Trainingsverbot.</p>
         </div>
       </section>
 
