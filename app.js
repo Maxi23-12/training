@@ -83,7 +83,54 @@
       unique.set(id,old?{...old,...Object.fromEntries(Object.entries(a).filter(([k,v])=>
         v!==null&&v!==undefined&&(k!=='km'||v>0)&&(k!=='secs'||v>0)))}:{...a});
     }
-    activities=[...unique.values()];
+    // An older Intervals CSV and the live API can contain the same workout under
+    // different IDs (e.g. after reconnecting a recording source). Reconcile only
+    // very close matches; never delete or rewrite the imported source records.
+    const liveIds=new Set((db.liveIntervals||[]).filter(a=>a?.id).map(a=>String(a.id)));
+    const csvIds=new Set((db.intervals||[]).filter(a=>a?.id).map(a=>String(a.id)));
+    const reconciled=[],byUtcDay=new Map();
+    let collapsed=0;
+    for(const a of unique.values()){
+      const timestamp=safeTime(a.date);
+      if(timestamp===null){reconciled.push(a);continue}
+      const dayKeys=[-1,0,1].map(offset=>new Date(timestamp+offset*86400000).toISOString().slice(0,10));
+      let match=-1,best=Infinity;
+      for(const key of dayKeys)for(const i of (byUtcDay.get(key)||[])){
+        const b=reconciled[i],otherTime=safeTime(b.date);
+        if(otherTime===null||a.sport!==b.sport||a.sport==='other'||!(a.km>0&&b.km>0&&a.secs>0&&b.secs>0))continue;
+        const dt=Math.abs(timestamp-otherTime)/1000;
+        const distanceDiff=Math.abs(a.km-b.km),durationDiff=Math.abs(a.secs-b.secs);
+        const nearStart=dt<=120&&distanceDiff<=Math.max(.10,Math.min(a.km,b.km)*.01)&&
+          durationDiff<=Math.max(90,Math.min(a.secs,b.secs)*.02);
+        // Some CSVs represent local time without a zone, causing an exact 1h/2h offset.
+        // Only apply that exception across CSV/API sources, with much tighter metrics.
+        const differentImports=(csvIds.has(String(a.id))&&!liveIds.has(String(a.id))&&liveIds.has(String(b.id)))||
+          (csvIds.has(String(b.id))&&!liveIds.has(String(b.id))&&liveIds.has(String(a.id)));
+        const sameSpecificName=norm(a.name)===norm(b.name)&&norm(a.name).length>=8;
+        const shiftedStart=differentImports&&sameSpecificName&&
+          (Math.abs(dt-3600)<=120||Math.abs(dt-7200)<=120)&&
+          distanceDiff<=Math.max(.03,Math.min(a.km,b.km)*.002)&&
+          durationDiff<=Math.max(15,Math.min(a.secs,b.secs)*.005);
+        if(!(nearStart||shiftedStart))continue;
+        const score=(nearStart?0:100000)+dt+distanceDiff*1000+durationDiff;
+        if(score<best){match=i;best=score}
+      }
+      if(match>=0){
+        const previous=reconciled[match];
+        // Prefer live API details but preserve populated historical measurements.
+        const preferred=liveIds.has(String(a.id))?a:previous;
+        const fallback=preferred===a?previous:a;
+        reconciled[match]={...fallback,...Object.fromEntries(Object.entries(preferred).filter(([k,v])=>
+          v!==null&&v!==undefined&&(!['km','secs','load','watts','np','hr'].includes(k)||v>0)))};
+        collapsed++;
+      }else{
+        const i=reconciled.push(a)-1,day=new Date(timestamp).toISOString().slice(0,10);
+        if(!byUtcDay.has(day))byUtcDay.set(day,[]);
+        byUtcDay.get(day).push(i);
+      }
+    }
+    activities=reconciled;
+    db._intervalDuplicatesCollapsed=collapsed;
     const original=(db.strava||[]).map(x=>({...x}));
     const linkedI=new Set(),linkedS=new Set(),idMap=new Map(),byDay=new Map();
     activities.forEach((a,i)=>{if(a.id&&!idMap.has(a.id))idMap.set(a.id,i);const day=a.date.slice(0,10);if(!byDay.has(day))byDay.set(day,[]);byDay.get(day).push(i)});
