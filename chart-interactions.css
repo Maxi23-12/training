@@ -1,0 +1,20 @@
+/* Shared chart interaction styles · v0.5.1 */
+.chart .chart-hover-tip{
+  position:absolute;z-index:10;pointer-events:none;
+  min-width:126px;max-width:calc(100% - 12px);
+  padding:10px 13px;border:1px solid #4b9188;border-radius:10px;
+  background:#0b2231;color:#ecf9f7;
+  box-shadow:0 12px 30px #0008;
+  transform:translate(-50%,calc(-100% - 14px));
+  white-space:nowrap;text-align:left;
+}
+.chart .chart-hover-tip[hidden]{display:none}
+.chart .chart-hover-tip.below{transform:translate(-50%,14px)}
+.chart .chart-hover-heading{font-size:11px;line-height:1.35;color:#aed7d4;margin-bottom:5px;white-space:normal}
+.chart .chart-hover-value{display:block;font-size:15px;line-height:1.2;font-weight:800;color:#80e9d5;font-variant-numeric:tabular-nums}
+.chart .bar-cell{cursor:crosshair}
+.chart .bar-cell:focus-visible,.chart .svg-chart:focus-visible{outline:2px solid #65dec6;outline-offset:4px}
+.chart .bar-cell:hover .bar,.chart .bar-cell:focus-visible .bar{filter:brightness(1.25)}
+.chart .svg-chart{cursor:crosshair;touch-action:pan-y}
+.chart .chart-hover-guide,.chart .chart-hover-marker{pointer-events:none}
+@media(max-width:650px){.chart .chart-hover-tip{padding:8px 10px;min-width:112px}.chart .chart-hover-value{font-size:13px}}
