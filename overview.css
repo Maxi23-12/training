@@ -1,0 +1,55 @@
+/* TRAINING · Balanced performance overview v0.5 */
+#page-overview .overview-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:4px 0 26px}
+#page-overview .overview-intro h1{font-size:clamp(31px,3.1vw,45px);line-height:1.1;letter-spacing:-1.5px;margin:9px 0 12px;max-width:760px}
+#page-overview .overview-intro p{font-size:13px;color:var(--muted);margin:0;max-width:640px}
+#page-overview .overview-datastamp{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid #2e4d50;background:#102927;border-radius:12px;flex-shrink:0}
+#page-overview .overview-datastamp strong,#page-overview .overview-datastamp span:last-child{display:block}
+#page-overview .overview-datastamp strong{font-size:11px}
+#page-overview .overview-datastamp span:last-child{font-size:11px;color:#9fc7bb}
+#page-overview .overview-status-dot{background:var(--mint);box-shadow:0 0 0 4px #65dec622;width:7px;height:7px;border-radius:100%}
+#page-overview .overview-feature-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;margin-bottom:26px}
+#page-overview .overview-coach-feature{background:radial-gradient(circle at top right,#1e555455,transparent 47%),linear-gradient(135deg,#153238,#102033);border-color:#35665e;display:flex;flex-direction:column;min-height:305px;padding:23px}
+#page-overview .overview-panel-kicker{color:#8ce9d5;letter-spacing:1.6px;font-size:11px;font-weight:800;display:flex;align-items:center;gap:9px}
+#page-overview .overview-kicker-mark{font-size:19px}
+#page-overview .overview-coach-feature h2{font-size:clamp(23px,2.35vw,31px);line-height:1.18;letter-spacing:-.85px;max-width:530px;margin:22px 0 10px}
+#page-overview .overview-coach-reason{font-size:13px;color:#c5d9df;line-height:1.72;max-width:570px;margin:0 0 20px}
+#page-overview .overview-fact-row{display:flex;gap:26px;padding:15px 0;border-top:1px solid #3a6d6555;margin-top:auto;flex-wrap:wrap}
+#page-overview .overview-fact-row div{display:grid;gap:3px}
+#page-overview .overview-fact-row span{font-size:10px;color:#a0c6be;letter-spacing:.3px}
+#page-overview .overview-fact-row strong{font-size:18px;letter-spacing:-.4px}
+#page-overview .overview-coach-actions{display:flex;gap:9px;flex-wrap:wrap;margin:3px 0 6px}
+#page-overview .overview-coach-actions .button{font-size:12px}
+#page-overview .overview-disclaimer{font-size:10px;color:#91b5b3;line-height:1.45;margin:11px 0 0}
+#page-overview .overview-health-feature{background:linear-gradient(150deg,#14283b,#101c2b);padding:23px;display:flex;flex-direction:column}
+#page-overview .overview-health-symbol{font-size:29px;color:#7edbc8;line-height:1}
+#page-overview .overview-health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:5px 0 14px}
+#page-overview .overview-health-stat{border:1px solid #31495c;background:#0e2030;border-radius:12px;padding:13px 13px 12px;min-width:0;min-height:107px}
+#page-overview .overview-health-stat>span{font-size:11px;color:#9db3c8;display:block}
+#page-overview .overview-health-stat>strong{font-size:clamp(20px,2vw,27px);font-variant-numeric:tabular-nums;letter-spacing:-.6px;display:block;margin:8px 0 4px}
+#page-overview .overview-health-stat>small{display:block;font-size:10px;color:#8ea9b9;line-height:1.4;overflow-wrap:anywhere}
+#page-overview .overview-inline-link{border:0;padding:5px 0;background:transparent;text-align:left;color:var(--mint);font-size:12px;font-weight:700}
+#page-overview .overview-inline-link:hover{text-decoration:underline}
+#page-overview .overview-inline-link:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+#page-overview .overview-health-feature>.overview-inline-link{margin-top:auto}
+#page-overview .overview-section-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:20px 0 13px}
+#page-overview .overview-section-heading h2{font-size:18px;margin:0 0 3px;letter-spacing:-.35px}
+#page-overview .overview-section-heading p{font-size:12px;color:var(--muted);margin:0}
+#page-overview .overview-kpi-grid{margin-bottom:25px}
+#page-overview .overview-kpi-grid .kpi{min-height:143px}
+#page-overview .overview-kpi-grid .kpi-value{font-size:clamp(25px,2.4vw,36px);margin:18px 0 5px}
+#page-overview .overview-chart-grid{margin-bottom:17px}
+#page-overview .overview-chart-panel .bars{height:190px}
+#page-overview .overview-chart-panel .bar-value{font-size:10px}
+#page-overview .overview-chart-panel .chart{min-height:230px}
+#page-overview .overview-bottom-grid .activity-row{grid-template-columns:58px minmax(0,1fr) 65px 64px 62px;gap:6px;padding:10px 9px}
+#page-overview .overview-context-panel{display:flex;flex-direction:column}
+#page-overview .overview-compass-symbol{color:#81e4cf;font-size:29px;line-height:1}
+#page-overview .overview-context-panel .coach-notes{margin-bottom:15px}
+#page-overview .overview-context-panel .coach-notes p{margin:11px 0;line-height:1.75}
+#page-overview .overview-goal-line{margin-top:auto;border:1px solid #345a5b;background:#123036;border-radius:12px;padding:13px 15px;display:grid;gap:5px}
+#page-overview .overview-goal-line span{font-size:10px;color:#80b7ad;letter-spacing:1.2px}
+#page-overview .overview-goal-line strong{font-size:13px;color:#d8ede7}
+@media(max-width:1200px){#page-overview .overview-feature-grid{grid-template-columns:1fr}#page-overview .overview-health-feature{min-height:0}}
+@media(max-width:950px){#page-overview .overview-intro{align-items:flex-start;flex-direction:column}#page-overview .overview-datastamp{align-self:flex-start}}
+@media(max-width:730px){#page-overview .overview-intro h1{font-size:33px}#page-overview .overview-health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#page-overview .overview-coach-feature,#page-overview .overview-health-feature{padding:17px}#page-overview .overview-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#page-overview .overview-chart-grid,#page-overview .overview-bottom-grid{grid-template-columns:minmax(0,1fr)}#page-overview .overview-section-heading{align-items:flex-start;flex-direction:column;gap:6px}#page-overview .overview-bottom-grid .activity-row{grid-template-columns:55px minmax(0,1fr) 58px;gap:7px}#page-overview .overview-bottom-grid .activity-row .activity-stat{display:none}}
+@media(max-width:450px){#page-overview .overview-intro h1{font-size:29px}#page-overview .overview-health-stat{padding:11px}#page-overview .overview-health-stat>strong{font-size:21px}#page-overview .overview-coach-actions .button{width:100%}#page-overview .overview-kpi-grid .kpi{padding:15px;min-height:143px}#page-overview .overview-kpi-grid .kpi-value{font-size:24px}}
