@@ -158,7 +158,44 @@
     $('trainPlanSuggestion').addEventListener('click',()=>{ $('trainPlanWorkout').value=suggestedId;planAdd()});
     $('trainAddPlan').addEventListener('click',planAdd);
   }
+  function intervalsEvent(id,date){
+    const w=workouts.find(x=>x.id===id);
+    if(!w)throw Error('Die ausgewählte Trainingseinheit ist unbekannt.');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(Date.parse(date+'T12:00:00Z')))
+      throw Error('Bitte einen gültigen Trainingstag wählen.');
+    const descriptions={
+      recovery:[
+        'Warmup','- 10m 50%','','Main Set','- 25m 55%','','Cooldown','- 10m 45%'
+      ],
+      endurance:[
+        'Warmup','- 10m ramp 50-65%','','Main Set','- 12m 70%','- 2m 50%','- 12m 70%','- 2m 50%','- 12m 70%','','Cooldown','- 10m 55%'
+      ],
+      tempo:[
+        'Warmup','- 12m ramp 50-80%','','Main Set','- 10m 90%','- 5m 55%','- 10m 90%','- 5m 55%','- 10m 90%','','Cooldown','- 13m ramp 60-45%'
+      ],
+      vo2:[
+        'Warmup','- 15m ramp 50-85%','','Block 1 10x','- 30s 120%','- 30s 50%','','Blockpause','- 5m 50%','','Block 2 10x','- 30s 120%','- 30s 50%','','Blockpause','- 5m 50%','','Block 3 10x','- 30s 120%','- 30s 50%','','Cooldown','- 5m ramp 60-40%'
+      ],
+      long:[
+        'Warmup','- 15m 55%','','Long Endurance','- 150m 68%','','Cooldown','- 15m 50%'
+      ],
+      free:['Freie Outdoor-Runde ohne feste Intervalle.','Nach Wetter, Lust und Tagesform. Draußen fahren > Rolle.']
+    };
+    return {
+      category:'WORKOUT',
+      start_date_local:date+'T00:00:00',
+      type:'Ride',
+      name:'TRAINING · '+w.name,
+      description:descriptions[id].join('\n'),
+      moving_time:w.min*60
+    };
+  }
   window.TrainingCoach={
-    render(context){ctx=context;init();const s=derive();insight(s);drawRecent(s);showChoice();drawWorkouts();drawPlan()}
+    render(context){ctx=context;init();const s=derive();insight(s);drawRecent(s);showChoice();drawWorkouts();drawPlan()},
+    listWorkouts(){return workouts.map(w=>({id:w.id,name:w.name,min:w.min,type:w.type}))},
+    intervalsEvent,
+    fillIntervalsForm(id,date){
+      if(window.TrainingIntervalsSync)window.TrainingIntervalsSync.fill(id,date);
+    }
   };
 })();
