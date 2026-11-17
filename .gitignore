@@ -1,0 +1,10 @@
+# TRAINING public code only
+# Never commit health data, training exports, or backups.
+*.fit
+*.gpx
+*.tcx
+activities.csv
+*wellness*.csv
+*RENPHO*.csv
+*backup*.json
+.DS_Store
