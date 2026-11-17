@@ -4,7 +4,7 @@ Kostenloses, mobiloptimiertes und lokal datenverarbeitendes Trainingscockpit fü
 
 ## Stand
 
-Version 0.1 – erste benutzbare Basis. Im Repository liegen ausschließlich Programmdateien und keine privaten Trainingsdaten.
+Version 0.2 – Coaching-Bereich mit flexibler Trainingsplanung. Die frühere V0.1 bleibt als Grundansicht erhalten. Im Repository liegen ausschließlich Programmdateien und keine privaten Trainingsdaten.
 
 ## GitHub Pages aktivieren
 
@@ -31,6 +31,8 @@ Regelmäßig ein privates JSON-Backup exportieren; für den Gerätewechsel auf d
 
 ## Funktionen
 
+- Coaching: Tagesform, Zeitbudget, drinnen/draußen, Schwerpunkt, regelbasierter Trainingsvorschlag, FTP-Wattvorgaben und ein flexibler lokaler Wochenplan
+- Coaching: Kurzvergleich 7/28 Tage mit Hinweis auf veraltete Daten; geplante Einheiten können manuell als erledigt/ausgefallen markiert werden
 - Übersicht: Radkilometer, Radstunden, jüngste Aktivitäten und Trainingsbelastung
 - Historie: Monatsansichten und Jahresvergleiche für Radfahren und Laufen
 - Aktivitäten: Filter nach Jahr, Sportart und Name
@@ -44,6 +46,8 @@ Regelmäßig ein privates JSON-Backup exportieren; für den Gerätewechsel auf d
 - Keine automatische Datenquellensynchronisierung
 - Keine automatische Synchronisierung zwischen Handy und PC
 - Keine FIT-Detailauswertung; CSV-Zusammenfassungen als Grundlage
+- Regelbasierte Coaching-Vorschläge sind noch keine automatische KI-Trainingssteuerung; subjektives Feedback und Trainingsergebnisse werden nicht selbstständig ausgewertet
+- Für aktuelle Empfehlungen regelmäßig neue CSV-Daten importieren, da kein Live-Sync existiert
 - Trainingsbelastung nur für tatsächlich von Intervals.icu gelieferte Einheiten
 - Doppelte Einheiten werden heuristisch erkannt, einzelne Sonderfälle sind manuell zu prüfen
 - Noch nicht in allen Browsern mit sämtlichen Originaldaten getestet
