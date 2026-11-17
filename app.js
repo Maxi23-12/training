@@ -225,27 +225,102 @@
     const duration=document.createElement('span');duration.className='activity-stat';duration.textContent=dur(a.secs);
     div.append(date,title,sport,km,duration);return div;
   }
+  function weightSeries(well){
+    const perDay=new Map();
+    for(const row of well){
+      if(row?.date&&Number.isFinite(row.weight)&&row.weight>=30&&row.weight<=250)
+        perDay.set(row.date,{date:row.date,weight:row.weight,source:'Intervals.icu'});
+    }
+    // Preserve the original RENPHO CSV when both sources have the same day.
+    for(const row of (db.renpho||[])){
+      if(row?.date&&Number.isFinite(row.weight)&&row.weight>=30&&row.weight<=250)
+        perDay.set(row.date,{date:row.date,weight:row.weight,source:'RENPHO'});
+    }
+    return [...perDay.values()].sort((a,b)=>a.date.localeCompare(b.date));
+  }
   function drawOverview(ag){
-    const ys=[...ag.annual.values()].sort((a,b)=>a.key.localeCompare(b.key));
-    const year=ys.length?ys.at(-1).key:String(new Date().getFullYear()),cur=ag.annual.get(year);
-    $('kpiKm').textContent=cur?fmt(cur.bikeKm,0)+' km':'–';$('kpiKmNote').textContent=cur?year+' · importierter Datenstand':'CSV-Dateien importieren';
-    $('kpiHours').textContent=cur?fmt(cur.bikeH,0)+' h':'–';
-    const latestActivity=activities[0],mostRecent=latestActivity?safeTime(latestActivity.date):Date.now(),lastWeek=(mostRecent-7*86400000);
-    const weeklyLoad=activities.filter(a=>safeTime(a.date)>=lastWeek&&a.source==='intervals'&&a.load!=null).reduce((sum,a)=>sum+a.load,0);
-    const loadCount=activities.filter(a=>safeTime(a.date)>=lastWeek&&a.source==='intervals'&&a.load!=null).length;
-    $('kpiLoad').textContent=loadCount?fmt(weeklyLoad,0):'–';
-    const w=latest(db.renpho||[],'weight');$('kpiWeight').textContent=w?fmt(w.weight,2)+' kg':'–';$('kpiWeightNote').textContent=w?dstr(Date.parse(w.date+'T12:00:00Z')):'RENPHO importieren';
-    barChart($('overviewYears'),ys.filter(x=>x.bikeKm>0).slice(-9).map(x=>({label:x.key,value:x.bikeKm})),null,{compact:true});
-    const weeks=[...ag.weekly.values()].sort((a,b)=>a.key.localeCompare(b.key)).filter(x=>x.key<=year+'-12-31').slice(-12);
-    barChart($('overviewWeeks'),weeks.map(x=>({label:x.key.slice(5),value:x.load})));
+    const now=Date.now(),week=7*86400000,eligible=a=>{
+      const t=safeTime(a.date);return t!==null&&t<=now+3600000;
+    };
+    const last7=activities.filter(a=>eligible(a)&&safeTime(a.date)>=now-week);
+    const last28=activities.filter(a=>eligible(a)&&safeTime(a.date)>=now-4*week);
+    const hours=arr=>arr.filter(a=>a.sport==='bike').reduce((s,a)=>s+Math.max(0,a.secs||0),0)/3600;
+    const loadRows=arr=>arr.filter(a=>a.source==='intervals'&&Number.isFinite(a.load)&&a.load>=0);
+    const loadSum=arr=>loadRows(arr).reduce((s,a)=>s+a.load,0);
+    const h7=hours(last7),h28=hours(last28),avg28=h28/4;
+    const l7=loadSum(last7),l28=loadSum(last28);
+    const loadCount=loadRows(last7).length;
+    const days=new Set(last7.map(a=>a.date.slice(0,10))).size;
+    const todayYear=String(new Date().getFullYear());
+    const yearData=ag.annual.get(todayYear);
+    const well=wellnessMerged(),sleep=latest(well,'sleep'),rest=latest(well,'restingHR'),hrv=latest(well,'hrv');
+    const weight=weightSeries(well).at(-1);
+    const shownDay=date=>date?dstr(Date.parse(date+'T12:00:00')):'Keine Messung';
+    const wellnessDate=date=>'Messung '+shownDay(date);
+    const lastActivity=activities.filter(eligible)[0];
+    $('overviewAsOf').textContent=lastActivity?'Letzte Aktivität: '+dstr(safeTime(lastActivity.date)):'Noch keine Aktivitäten';
+    $('kpiHours').textContent=last7.length?fmt(h7,1)+' h':'–';
+    $('kpiHoursNote').textContent=h28>0?'Ø '+fmt(avg28,1)+' h/Woche · 28 Tage':'Noch kein 28-Tage-Vergleich';
+    $('kpiLoad').textContent=loadCount?fmt(l7,0):'–';
+    $('kpiLoadNote').textContent=loadCount&&loadRows(last28).length?'Ø '+fmt(l28/4,0)+' / Woche · 28 Tage':'Nur vorhandene Intervals.icu-Werte';
+    $('kpiKm').textContent=yearData?fmt(yearData.bikeKm,0)+' km':'–';
+    $('kpiKmNote').textContent=todayYear+' · Aufgezeichnete Kilometer';
+    $('kpiDays').textContent=last7.length?String(days):'–';
+    $('kpiDaysNote').textContent='Rad, Lauf & weitere Sportarten';
+    $('overviewSleep').textContent=sleep?fmt(sleep.sleep,1)+' h':'–';
+    $('overviewSleepDate').textContent=sleep?wellnessDate(sleep.date):'Keine Messung';
+    $('overviewResting').textContent=rest?fmt(rest.restingHR,0)+' bpm':'–';
+    $('overviewRestingDate').textContent=rest?wellnessDate(rest.date):'Keine Messung';
+    $('overviewHrv').textContent=hrv?fmt(hrv.hrv,0)+' ms':'–';
+    $('overviewHrvDate').textContent=hrv?wellnessDate(hrv.date):'Keine Messung';
+    $('kpiWeight').textContent=weight?fmt(weight.weight,2)+' kg':'–';
+    $('kpiWeightNote').textContent=weight?shownDay(weight.date)+' · '+weight.source:'Keine Messung';
+
+    const lastT=lastActivity?safeTime(lastActivity.date):null;
+    const recentSleep=sleep&&Date.parse(sleep.date+'T12:00:00')>=now-72*3600000;
+    const highVolume=avg28>=1&&h7>avg28*1.5;
+    let headline='Dein Training im Blick.',reason='Sobald aktuelle Aktivitäten vorhanden sind, siehst du hier eine vorsichtige Einordnung deines Trainingsumfangs.';
+    if(lastT!==null&&lastT<now-4*86400000){
+      headline='Erst den Datenstand prüfen.';
+      reason='Die letzte aufgezeichnete Aktivität liegt einige Tage zurück. Wenn du wieder einsteigst, orientiere dich zuerst an deiner tatsächlichen Tagesform.';
+    }else if(lastT!==null&&recentSleep&&sleep.sleep<6.5){
+      headline='Heute lieber bewusst dosieren.';
+      reason='Die zuletzt erfasste Schlafdauer war eher kurz. Eine lockere Einheit oder Erholung könnte besser passen als ein harter Reiz – dein Gefühl entscheidet.';
+    }else if(lastT!==null&&highVolume){
+      headline='Umfang steigt – Erholung mitdenken.';
+      reason='Deine Radzeit in den vergangenen sieben Tagen liegt deutlich über dem 28-Tage-Wochendurchschnitt. Steigere nicht automatisch weiter.';
+    }else if(lastT!==null){
+      headline='Grundlage ist eine gute Option.';
+      reason='Dein aktueller Trainingsverlauf ist erfasst. Für die heutige Einheit zählen zusätzlich Beine, Motivation, verfügbare Zeit und die Erholung.';
+    }
+    $('overviewCoachHeadline').textContent=headline;
+    $('overviewCoachWhy').textContent=reason;
+    $('overviewCoachHours').textContent=last7.length?fmt(h7,1)+' h':'–';
+    $('overviewCoachAverage').textContent=h28>0?fmt(avg28,1)+' h/Woche':'–';
+
+    // Anchor all eight bars on the CURRENT calendar week, not on the latest
+    // imported workout. Missing weeks are shown as zero, not omitted.
+    const monday=new Date();monday.setHours(12,0,0,0);
+    monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+    const series=[];
+    for(let back=7;back>=0;back--){
+      const d=new Date(monday);d.setDate(d.getDate()-back*7);
+      const key=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+      series.push({label:pad(d.getDate())+'.'+pad(d.getMonth()+1),week:ag.weekly.get(key)||null});
+    }
+    barChart($('overviewWeeks'),series.map(x=>({label:x.label,value:x.week?.load||0})));
+    barChart($('overviewHours'),series.map(x=>({label:x.label,value:x.week?.bikeH||0})));
     $('firstStart').hidden=activities.length>0;
     const recent=$('recentActivities');recent.replaceChildren();
     for(const a of activities.slice(0,5))recent.append(activityMarkup(a));
     if(!activities.length)recent.innerHTML='<div class="empty-chart">Deine letzten Einheiten erscheinen hier.</div>';
     const notes=$('coachNotes');notes.replaceChildren();
-    if(ys.length>1){const all=ys.filter(x=>x.bikeH>0).sort((a,b)=>b.bikeH-a.bikeH);notes.append(noteHtml('Dein umfangreichstes Radjahr nach dokumentierten Fahrstunden: '+all[0].key+' mit '+fmt(all[0].bikeH,0)+' Stunden.'))}
-    if(cur)notes.append(noteHtml('Im zuletzt erfassten Jahr stehen '+fmt(cur.bikeKm,0)+' Radkilometer und '+fmt(cur.bikeH,0)+' Stunden. Die Interpretation hängt auch vom Umfang der verfügbaren Daten ab.'));
-    notes.append(noteHtml('Wichtig: CTL, TSS und Wattwerte sind keine direkten Leistungsnachweise. Training, Erholung und deine eigene Einschätzung gehören zusammen.'));
+    if(last7.length)notes.append(noteHtml('Die vergangenen sieben Tage: '+fmt(h7,1)+' Radstunden an insgesamt '+days+' Trainingstagen.'));
+    else notes.append(noteHtml('In den letzten sieben Tagen sind noch keine Aktivitäten erfasst.'));
+    if(avg28>0)notes.append(noteHtml('Dein vierwöchiger Durchschnitt liegt bei '+fmt(avg28,1)+' Radstunden pro Woche. Entscheidend ist die Entwicklung über mehrere Wochen, nicht ein einzelner Tag.'));
+    else notes.append(noteHtml('Für einen aussagekräftigen Umfangsvergleich benötigen wir weitere aufgezeichnete Wochen.'));
+    if(yearData)notes.append(noteHtml('Bisher im Jahr '+todayYear+': '+fmt(yearData.bikeKm,0)+' Radkilometer. Weitere Jahresvergleiche findest du in der Historie.'));
+    notes.append(noteHtml('Trainingslast, Schlaf und HRV helfen bei der Einordnung – sie sind allein keine sichere Aussage über deine Tagesform.'));
   }
   function drawHistory(ag){
     const select=$('historyYear');const years=[...ag.annual.keys()].sort().reverse(),old=select.value;
@@ -307,18 +382,7 @@
   }
   function drawWellness(){
     const well=wellnessMerged(),sleep=latest(well,'sleep'),hrv=latest(well,'hrv'),rest=latest(well,'restingHR');
-    // Combine actual Intervals.icu weigh-ins with existing RENPHO CSV history.
-    // CSV is authoritative when both sources record the same calendar day.
-    const weightsByDate=new Map();
-    for(const row of well){
-      if(row?.date&&row.weight>=30&&row.weight<=250)
-        weightsByDate.set(row.date,{date:row.date,weight:row.weight,source:'Intervals.icu'});
-    }
-    for(const row of (db.renpho||[])){
-      if(row?.date&&row.weight>=30&&row.weight<=250)
-        weightsByDate.set(row.date,{date:row.date,weight:row.weight,source:'RENPHO'});
-    }
-    const weigh=[...weightsByDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+    const weigh=weightSeries(well);
     const w=weigh.at(-1);
     $('wellWeight').textContent=w?fmt(w.weight,2)+' kg':'–';
     $('wellWeightInfo').textContent=w?w.date+' · '+w.source:'Noch keine Gewichtsmessung';
