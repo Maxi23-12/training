@@ -9,6 +9,8 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./training.css">
+  <script defer src="./training.js"></script>
   <script defer src="./app.js"></script>
 </head>
 <body>
@@ -21,6 +23,7 @@
     <div class="nav-caption">COCKPIT</div>
     <nav class="desktop-nav" aria-label="Hauptnavigation">
       <button data-nav="overview" class="navbtn selected"><span class="nav-icon">◫</span> Übersicht</button>
+      <button data-nav="training" class="navbtn"><span class="nav-icon">⚡</span> Coaching</button>
       <button data-nav="history" class="navbtn"><span class="nav-icon">▥</span> Historie</button>
       <button data-nav="activities" class="navbtn"><span class="nav-icon">≡</span> Aktivitäten</button>
       <button data-nav="wellness" class="navbtn"><span class="nav-icon">♡</span> Erholung & Gewicht</button>
@@ -79,6 +82,72 @@
             <div id="coachNotes" class="coach-notes"></div>
           </article>
         </div>
+      </section>
+
+      <section class="page" id="page-training" hidden>
+        <div class="eyebrow">TRAINING · COACH DESK</div>
+        <h1 class="section-title">Trainieren mit <em>System.</em></h1>
+        <p class="section-lead">Nicht nur Kilometer sammeln: Belastung verstehen, passende Einheiten auswählen und flexibel planen.</p>
+
+        <div id="trainingDataNotice" class="training-notice" role="status"></div>
+        <div class="kpi-grid">
+          <article class="panel kpi"><span class="kpi-label">Radstunden · 7 Tage</span><div class="kpi-value" id="train7h">–</div><div class="kpi-note">Kalendertage · vorhandene Daten</div></article>
+          <article class="panel kpi"><span class="kpi-label">Radstunden · 28 Tage</span><div class="kpi-value" id="train28h">–</div><div class="kpi-note">Wochenmittel aus 28 Tagen</div></article>
+          <article class="panel kpi"><span class="kpi-label">Trainingslast · 7 Tage</span><div class="kpi-value" id="train7load">–</div><div class="kpi-note">Nur Intervals.icu-Messungen</div></article>
+          <article class="panel kpi"><span class="kpi-label">Trainingstage · 7 Tage</span><div class="kpi-value" id="train7days">–</div><div class="kpi-note">Sportarten zusammen</div></article>
+        </div>
+
+        <div class="two-col training-columns">
+          <article class="panel training-decision">
+            <div class="panel-heading"><div><h2>Was passt heute?</h2><p>Deine Tagesform entscheidet – keine starre Wochenvorgabe</p></div><span class="chip">FLEX COACH</span></div>
+            <div class="controls-row training-fields">
+              <label>Wie fühlen sich die Beine an?
+                <select id="trainFeel"><option value="fresh">Frisch und motiviert</option><option value="normal" selected>Normal / alles gut</option><option value="tired">Müde oder schwer</option></select>
+              </label>
+              <label>Wieviel Zeit ist drin?
+                <select id="trainTime"><option value="30">30 Minuten</option><option value="60" selected>1 Stunde</option><option value="90">1½ Stunden</option><option value="120">2 Stunden</option><option value="180">3 Stunden</option><option value="240">4 Stunden oder mehr</option></select>
+              </label>
+              <label>Wo möchtest du fahren?
+                <select id="trainPlace"><option value="outdoor" selected>Draußen ☀️</option><option value="indoor">Rolle</option></select>
+              </label>
+              <label>Wunsch-Schwerpunkt
+                <select id="trainGoal"><option value="auto" selected>Automatisch vorschlagen</option><option value="base">Grundlage</option><option value="vo2">VO₂max / 30-30</option><option value="threshold">Sweetspot / Schwelle</option><option value="recovery">Ganz locker</option></select>
+              </label>
+            </div>
+            <div id="trainSuggestion" class="training-suggestion" aria-live="polite"></div>
+            <div class="training-actions"><button class="button primary" id="trainPlanSuggestion">Einheit in meinen Plan übernehmen</button><button class="button secondary" id="trainShowWorkout">Einheit im Detail ansehen</button></div>
+            <p class="chart-foot">Regelbasierte Orientierung aus vorhandenen Trainingsdaten und deiner Tagesform – kein vollautomatisches Coaching. Keine verbindliche Trainingsanweisung.</p>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Belastung einordnen</h2><p>Kurze Interpretation statt TSS-Zahlenfriedhof</p></div></div>
+            <div id="trainInsight" class="training-insight"></div>
+            <div class="separator-line"></div>
+            <h3 class="training-small-title">Deine letzten Einheiten</h3>
+            <div id="trainRecent" class="training-recent"></div>
+          </article>
+        </div>
+
+        <div class="two-col training-columns">
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Einheiten-Bibliothek</h2><p>Konkreter Aufbau mit deinen FTP-Wattwerten</p></div><span class="chip soft" id="trainFTPLabel">280 W FTP</span></div>
+            <div class="training-workouts" id="trainWorkoutList"></div>
+            <div id="trainWorkoutDetail" class="training-workout-detail" aria-live="polite"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><div><h2>Dein flexibler Trainingsplan</h2><p>Was du vorhast – nicht was du musst</p></div><span class="chip">LOKAL</span></div>
+            <div class="controls-row training-fields">
+              <label>Datum <input id="trainPlanDate" type="date"></label>
+              <label>Einheit <select id="trainPlanWorkout"></select></label>
+              <label class="grow">Notiz (optional) <input id="trainPlanNote" maxlength="160" type="text" placeholder="z. B. nur wenn das Wetter mitspielt"></label>
+            </div>
+            <button class="button primary" id="trainAddPlan">+ Einheit vormerken</button>
+            <p id="trainPlanMessage" class="training-plan-message" role="status"></p>
+            <div class="separator-line"></div>
+            <div id="trainPlanList" class="training-plan-list"></div>
+            <p class="chart-foot">Erledigt wird nur manuell markiert. Die App behauptet nicht automatisch, eine geplante Einheit sei gefahren worden. Planung und Notizen sind im privaten JSON-Backup enthalten.</p>
+          </article>
+        </div>
+        <p class="footer-note">TRAINING · Coaching-Prototyp V0.2 · Die Empfehlungen berücksichtigen keine medizinischen Faktoren, Wattmessung und Erholungswerte nicht durchgehend. Deine Rückmeldung bleibt entscheidend.</p>
       </section>
 
       <section class="page" id="page-history" hidden>
@@ -184,7 +253,8 @@
 <nav class="mobile-nav" aria-label="Mobile Navigation">
   <button data-nav="overview" class="navbtn selected"><span>◫</span><small>Start</small></button>
   <button data-nav="history" class="navbtn"><span>▥</span><small>Historie</small></button>
-  <button data-nav="activities" class="navbtn"><span>≡</span><small>Training</small></button>
+  <button data-nav="training" class="navbtn"><span>⚡</span><small>Coach</small></button>
+  <button data-nav="activities" class="navbtn"><span>≡</span><small>Einheiten</small></button>
   <button data-nav="wellness" class="navbtn"><span>♡</span><small>Erholung</small></button>
   <button data-nav="data" class="navbtn"><span>⚙</span><small>Daten</small></button>
 </nav>
